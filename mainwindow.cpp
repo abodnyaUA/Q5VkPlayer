@@ -49,7 +49,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
 
     ///connection area
     connect(ui->musicWidget,SIGNAL(cellDoubleClicked(int,int)),music,SLOT(playThatSong(int,int)));
-
+    //connect(ui->musicWidget,SIGNAL(cellClicked(int,int)),music,SLOT(setSongIndex(int,int)));
     ///\\\connection area
 
 

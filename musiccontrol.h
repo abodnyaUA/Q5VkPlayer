@@ -17,6 +17,9 @@ signals:
 public slots:
     void setPlayList(QList<QUrl> list);
     void playThatSong(int,int);
+    void setSongIndex(int,int);
+    void shuffleMode(bool);
+    //void repeatMode(bool);
     
 };
 

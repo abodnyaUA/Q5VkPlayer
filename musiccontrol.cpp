@@ -25,3 +25,21 @@ void musicControl::playThatSong(int songNumber, int /*secondUnneededParam*/)
     player->setVolume(50);
     player->play();
 }
+
+void musicControl::setSongIndex(int index, int /*secondUnneededParam*/)
+{
+    playlist->setCurrentIndex(index);
+}
+
+void musicControl::shuffleMode(bool enable)
+{
+    switch(enable)
+    {
+    case true:
+        playlist->setPlaybackMode(QMediaPlaylist::Random);
+        break;
+    case false:
+        playlist->setPlaybackMode(QMediaPlaylist::Sequential);
+        break;
+    }
+}

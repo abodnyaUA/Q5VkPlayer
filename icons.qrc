@@ -24,5 +24,7 @@
         <file>icons/light/repeat.png</file>
         <file>icons/light/shuffle.png</file>
         <file>icons/qvk.ico</file>
+        <file>icons/dark/media-volume.png</file>
+        <file>icons/dark/mute.png</file>
     </qresource>
 </RCC>
