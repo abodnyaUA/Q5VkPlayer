@@ -36,6 +36,7 @@ public:
 public slots:
     void loginSlot();
     void getAudioList();
+    void setSongUi(int,int);
 private slots:
     void replyFinished(QNetworkReply *reply);
     void setToken(QString,QString);

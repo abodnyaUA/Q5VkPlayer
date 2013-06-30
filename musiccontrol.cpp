@@ -3,6 +3,7 @@
 
 musicControl::musicControl(QObject *parent) : QObject(parent)
 {
+    shufle = false;
     player = new QMediaPlayer;
     playlist = new QMediaPlaylist;
 }
@@ -28,18 +29,60 @@ void musicControl::playThatSong(int songNumber, int /*secondUnneededParam*/)
 
 void musicControl::setSongIndex(int index, int /*secondUnneededParam*/)
 {
-    playlist->setCurrentIndex(index);
+    if(player->state() == QMediaPlayer::PausedState)
+        playlist->setCurrentIndex(index);
 }
 
 void musicControl::shuffleMode(bool enable)
 {
+
     switch(enable)
     {
     case true:
-        playlist->setPlaybackMode(QMediaPlaylist::Random);
+        qDebug()<<"Set random mode";
+        shuffle = true;
+        //qsrand(QTime::currentTime().msecsTo(QTime()));
+        //playlist->setPlaybackMode(QMediaPlaylist::Random);
+        //playlist->shuffle();
         break;
     case false:
-        playlist->setPlaybackMode(QMediaPlaylist::Sequential);
+        qDebug()<<"Set normal mode";
+        shuffle = false;
+        //playlist->setPlaybackMode(QMediaPlaylist::Sequential);
+        break;
+    }
+}
+
+void musicControl::playNextSong()
+{
+    qDebug()<<"next song";
+    playlist->next();
+    qDebug()<<playlist->currentIndex();
+    emit setIndexToUi(playlist->currentIndex(),playlist->previousIndex());
+}
+
+void musicControl::playPrevSong()
+{
+    qDebug()<<"Prev song";
+    playlist->previous();
+    emit setIndexToUi(playlist->currentIndex(),playlist->nextIndex());
+    qDebug()<<playlist->currentIndex();
+}
+
+void musicControl::changeState()
+{
+    QMediaPlayer::State state;
+    state = player->state();
+    switch (state) {
+    case QMediaPlayer::PausedState:
+        player->play();
+        emit setPlayingUi();
+        break;
+    case QMediaPlayer::PlayingState:
+        player->pause();
+        emit setPausedUi();
+        break;
+    default:
         break;
     }
 }

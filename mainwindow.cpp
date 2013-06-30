@@ -28,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     ui->musicWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->musicWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->musicWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
-    connect(ui->toolButton,SIGNAL(clicked()),SLOT(loginSlot()));
+    //connect(ui->toolButton,SIGNAL(clicked()),SLOT(loginSlot()));
 
     ////////////////////////////////////////////////Creating actions
     QAction *login = new QAction(tr("Login"),this);
@@ -49,7 +49,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
 
     ///connection area
     connect(ui->musicWidget,SIGNAL(cellDoubleClicked(int,int)),music,SLOT(playThatSong(int,int)));
-    //connect(ui->musicWidget,SIGNAL(cellClicked(int,int)),music,SLOT(setSongIndex(int,int)));
+    connect(ui->musicWidget,SIGNAL(cellClicked(int,int)),music,SLOT(setSongIndex(int,int)));
+    connect(ui->shuffButton,SIGNAL(toggled(bool)),music,SLOT(shuffleMode(bool)));
+    connect(ui->nextButton,SIGNAL(clicked()),music,SLOT(playNextSong()));
+    connect(music,SIGNAL(setIndexToUi(int,int)),this,SLOT(setSongUi(int,int)));
+    connect(ui->prevButton,SIGNAL(clicked()),music,SLOT(playPrevSong()));
     ///\\\connection area
 
 
@@ -69,7 +73,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     }
 }
 
-
+void MainWindow::setSongUi(int current,int prev)
+{
+    ui->musicWidget->scrollToItem(ui->musicWidget->item(current,0));
+}
 
 void MainWindow::loginSlot()
 {
