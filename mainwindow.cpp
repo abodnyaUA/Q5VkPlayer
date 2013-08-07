@@ -9,8 +9,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
 {
     ui->setupUi(this);
     ui->lineEdit->setPlaceholderText("Search here");
-    /*musicControl **/music = new musicControl;
-    connect(this,SIGNAL(setPlayingOrder(QList<QUrl>)),music,SLOT(setPlayList(QList<QUrl>)));
 
     ///table setting
     QStringList header;
@@ -48,6 +46,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     ui->toolButton->setMenu(eyemenu);
 
     ///connection area
+    /*musicControl **/music = new musicControl;
+    connect(this,SIGNAL(setPlayingOrder(QList<QUrl>)),music,SLOT(setPlayList(QList<QUrl>)));
     connect(ui->musicWidget,SIGNAL(cellDoubleClicked(int,int)),music,SLOT(playThatSong(int,int)));
     connect(ui->musicWidget,SIGNAL(cellClicked(int,int)),music,SLOT(setSongIndex(int,int)));
     connect(ui->shuffButton,SIGNAL(toggled(bool)),music,SLOT(shuffleMode(bool)));
@@ -55,6 +55,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     connect(music,SIGNAL(setIndexToUi(int,int)),this,SLOT(setSongUi(int,int)));
     connect(ui->prevButton,SIGNAL(clicked()),music,SLOT(playPrevSong()));
     connect(ui->tooglePlayingButton,SIGNAL(clicked()),music,SLOT(changeState()));
+    connect(music,SIGNAL(setPlayingUi()),this,SLOT(setPlayingUi()));
+    connect(music,SIGNAL(setPausedUi()),this,SLOT(setPausedUi()));
     ///connection area
 
 
@@ -72,6 +74,20 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
         file.close();
         getAudioList();
     }
+}
+
+void MainWindow::setShuffle()
+{
+}
+
+void MainWindow::setPlayingUi()
+{
+    ui->tooglePlayingButton->setIcon(QIcon(QPixmap(":/icons/dark/gtk-media-pause.png")));
+}
+
+void MainWindow::setPausedUi()
+{
+    ui->tooglePlayingButton->setIcon(QIcon(QPixmap(":/icons/dark/gtk-media-play-ltr.png")));
 }
 
 void MainWindow::setSongUi(int current,int /*prev*/)

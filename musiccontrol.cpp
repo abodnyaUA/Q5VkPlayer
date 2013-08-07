@@ -26,6 +26,7 @@ void musicControl::playThatSong(int songNumber, int /*secondUnneededParam*/)
     playlist->setCurrentIndex(songNumber);
     player->setVolume(50);
     player->play();
+    emit setPlayingUi();
 }
 
 void musicControl::setSongIndex(int index, int /*secondUnneededParam*/)
