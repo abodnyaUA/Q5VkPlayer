@@ -28,7 +28,6 @@ vkAuth::vkAuth(QWidget *parent) : QWebView(parent)
 void vkAuth::slotUrlChanged(QUrl url)
 {
     url = url.toString().replace("#","?");
-    qDebug()<<"SOME TEXT!";
     QUrlQuery qurl;
     qDebug()<<"QUrlQuery creating successful";
     qurl = QUrlQuery(url.query());

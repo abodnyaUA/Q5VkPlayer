@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui multimedia multimediawidgets
+QT       += core gui multimediawidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += webkitwidgets multimedia multimediawidgets
 

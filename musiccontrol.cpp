@@ -17,6 +17,7 @@ void musicControl::setPlayList(QList<QUrl> list)
         playlist->addMedia(list[i]);
     }
     player->setPlaylist(playlist);
+//    playlist->  somewere here must be an good shuffle mode;)
 }
 
 void musicControl::playThatSong(int songNumber, int /*secondUnneededParam*/)
@@ -40,15 +41,15 @@ void musicControl::shuffleMode(bool enable)
     {
     case true:
         qDebug()<<"Set random mode";
-        shuffle = true;
-        //qsrand(QTime::currentTime().msecsTo(QTime()));
-        //playlist->setPlaybackMode(QMediaPlaylist::Random);
+       // shuffle = true;
+        qsrand(QTime::currentTime().msecsTo(QTime()));
+        playlist->setPlaybackMode(QMediaPlaylist::Random);
         //playlist->shuffle();
         break;
     case false:
         qDebug()<<"Set normal mode";
-        shuffle = false;
-        //playlist->setPlaybackMode(QMediaPlaylist::Sequential);
+        //shuffle = false;
+        playlist->setPlaybackMode(QMediaPlaylist::Sequential);
         break;
     }
 }

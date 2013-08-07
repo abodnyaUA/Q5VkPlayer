@@ -16,8 +16,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     QStringList header;
 
     ///write table header
-    ui->musicWidget->setColumnCount(3);
-    header <<"Artist"<<"Title"<<"Duration";
+    ui->musicWidget->setColumnCount(4);
+    header <<"Artist"<<"Title"<<"Duration"<<"link";   //in case of unsuccesseful update....
 
     ///set table header
     ui->musicWidget->setHorizontalHeaderLabels(header);
@@ -54,7 +54,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     connect(ui->nextButton,SIGNAL(clicked()),music,SLOT(playNextSong()));
     connect(music,SIGNAL(setIndexToUi(int,int)),this,SLOT(setSongUi(int,int)));
     connect(ui->prevButton,SIGNAL(clicked()),music,SLOT(playPrevSong()));
-    ///\\\connection area
+    connect(ui->tooglePlayingButton,SIGNAL(clicked()),music,SLOT(changeState()));
+    ///connection area
 
 
     ///auto refresh and autologin
@@ -73,9 +74,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     }
 }
 
-void MainWindow::setSongUi(int current,int prev)
+void MainWindow::setSongUi(int current,int /*prev*/)
 {
     ui->musicWidget->scrollToItem(ui->musicWidget->item(current,0));
+    this->setWindowTitle(ui->musicWidget->item(current,0)->text()+"  -  "+
+                         ui->musicWidget->item(current,1)->text());
+//    ui->musicWidget->item(current,0)->setFont(QFont(bold));
+//    ui->musicWidget->item(current,1)->setFont(bold);
 }
 
 void MainWindow::loginSlot()
