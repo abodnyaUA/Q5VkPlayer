@@ -4,11 +4,13 @@
 #include "qdebug.h"
 #include <QUrlQuery>
 #include "musiccontrol.h"
+#include <QSettings>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     ui->lineEdit->setPlaceholderText("Search here");
+    settings = new QSettings(this);
 
     ///table setting
     QStringList header;
@@ -48,6 +50,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     ///connection area
     /*musicControl **/music = new musicControl;
     connect(this,SIGNAL(setPlayingOrder(QList<QUrl>)),music,SLOT(setPlayList(QList<QUrl>)));
+    connect(ui->volumeSlider,SIGNAL(valueChanged(int)),music,SLOT(volumeSliderSlot(int)));
     connect(ui->musicWidget,SIGNAL(cellDoubleClicked(int,int)),music,SLOT(playThatSong(int,int)));
     connect(ui->musicWidget,SIGNAL(cellClicked(int,int)),music,SLOT(setSongIndex(int,int)));
     connect(ui->shuffButton,SIGNAL(toggled(bool)),music,SLOT(shuffleMode(bool)));
@@ -59,25 +62,35 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     connect(music,SIGNAL(setPausedUi()),this,SLOT(setPausedUi()));
     ///connection area
 
-
-    ///auto refresh and autologin
-    ///checking file
-    QFile file("token");
-    if(!file.open(QIODevice::ReadOnly))
-    {
-        loginSlot();
-    }
-    else
-    {
-        QTextStream in(&file);
-        token = in.readLine();
-        file.close();
-        getAudioList();
-    }
+    ///CONFIG LOADING==================================
+    this->loadSettings();
 }
 
-void MainWindow::setShuffle()
+void MainWindow::loadSettings()
 {
+    token = settings->value("token","none").toString();
+    userId = settings->value("user_id","none").toString();
+    if(token == "none")
+        loginSlot();
+    ui->volumeSlider->setValue(settings->value("volume",50).toInt());
+    this->getAudioList();
+}
+
+void MainWindow::saveSettings()
+{
+    settings->setValue("token",token);
+    settings->setValue("user_id",userId);
+    settings->setValue("volume",ui->volumeSlider->value());
+}
+
+void MainWindow::setShuffle(bool set)
+{
+    if(set)
+    {
+        for(int i=0;i<ui->musicWidget->rowCount();i++)
+        {
+        }
+    }
 }
 
 void MainWindow::setPlayingUi()
@@ -90,13 +103,20 @@ void MainWindow::setPausedUi()
     ui->tooglePlayingButton->setIcon(QIcon(QPixmap(":/icons/dark/gtk-media-play-ltr.png")));
 }
 
-void MainWindow::setSongUi(int current,int /*prev*/)
+void MainWindow::setSongUi(int current,int prev)
 {
     ui->musicWidget->scrollToItem(ui->musicWidget->item(current,0));
     this->setWindowTitle(ui->musicWidget->item(current,0)->text()+"  -  "+
                          ui->musicWidget->item(current,1)->text());
-//    ui->musicWidget->item(current,0)->setFont(QFont(bold));
-//    ui->musicWidget->item(current,1)->setFont(bold);
+    ui->musicWidget->item(current,0)->setSelected(true);
+    ui->musicWidget->item(current,1)->setSelected(true);
+    ui->musicWidget->item(current,2)->setSelected(true);
+    ui->musicWidget->item(current,3)->setSelected(true);
+
+    ui->musicWidget->item(prev,0)->setSelected(false);
+    ui->musicWidget->item(prev,1)->setSelected(false);
+    ui->musicWidget->item(prev,2)->setSelected(false);
+    ui->musicWidget->item(prev,3)->setSelected(false);
 }
 
 void MainWindow::loginSlot()
@@ -104,6 +124,7 @@ void MainWindow::loginSlot()
     vkAuth *loginWindow = new vkAuth;
     QObject::connect(loginWindow,SIGNAL(tokenSet(QString,QString)),SLOT(setToken(QString,QString)));
     loginWindow->show();
+    qDebug()<<"Login window loaded.....";
 }
 
 void MainWindow::about()
@@ -234,10 +255,12 @@ void MainWindow::getAudioList()    //it is our request function
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)),this, SLOT(replyFinished(QNetworkReply*)));
     rAudioUrl.setQuery(tmpUrl);
+    qDebug() << rAudioUrl;
     manager->get(QNetworkRequest(rAudioUrl));
 }
 
 MainWindow::~MainWindow()
 {
+    saveSettings();
     delete ui;
 }

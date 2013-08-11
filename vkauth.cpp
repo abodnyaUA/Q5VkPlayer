@@ -20,6 +20,7 @@ vkAuth::vkAuth(QWidget *parent) : QWebView(parent)
     turl.addQueryItem("redirect_uri", "https://oauth.vk.com/blank.html");
     turl.addQueryItem("response_type", "token");
     url.setQuery(turl);
+    qDebug()<<url;
     this->load(url);
     qDebug()<<"default constructor:";
     qDebug()<<url;
@@ -52,16 +53,23 @@ void vkAuth::slotUrlChanged(QUrl url)
     uid = qurl.queryItemValue("user_id");
     //... and to file
     out<<token;
+    out<<"\n"<<uid;
     file.close();
     //now we should have an token file
-    qDebug()<<"TOKEN:";
-    qDebug() << token;
-    qDebug()<<"USER_ID:";
-    qDebug()<<uid;
-    this->hide();
+    qDebug()<<"Token file writed";
+    qDebug()<<"TOKEN:" << token;
+    qDebug()<<"USER_ID:"<<uid;
+    qDebug()<<"\n===============login finished==========\n";
+    emit tokenSet(token,uid);
     QMessageBox::information(
                 this,
                 tr("Login successful"),
                 tr("You have successfuly log in.") );
-    emit tokenSet(token,uid);
+   this->deleteLater();
+}
+
+
+vkAuth::~vkAuth()
+{
+    qDebug()<<"Login window closed";
 }

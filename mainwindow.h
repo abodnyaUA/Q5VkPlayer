@@ -12,6 +12,7 @@
 #include <QMenu>
 #include <QFile>
 #include "musiccontrol.h"
+#include <QSettings>
 
 
 
@@ -29,17 +30,16 @@ class MainWindow : public QMainWindow
     QString durationToHuman(int d);
     void setTableLine(QStringList line);
     musicControl *music;
-    
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 public slots:
     void loginSlot();
     void getAudioList();
-    void setSongUi(int,int);
+    void setSongUi(int, int);
     void setPlayingUi();
     void setPausedUi();
-    void setSuffle();
+    void setShuffle(bool);
 private slots:
     void replyFinished(QNetworkReply *reply);
     void setToken(QString,QString);
@@ -47,6 +47,9 @@ private slots:
     
 private:
     Ui::MainWindow *ui;
+    QSettings *settings;
+    void loadSettings();
+    void saveSettings();
 signals:
     void setPlayingOrder(QList<QUrl>);
 };

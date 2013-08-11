@@ -25,6 +25,7 @@ public slots:
     void playNextSong();
     void playPrevSong();
     void changeState();
+    void volumeSliderSlot(int);
     //void repeatMode(bool);
     
 };

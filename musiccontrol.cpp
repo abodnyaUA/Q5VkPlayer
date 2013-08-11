@@ -8,6 +8,11 @@ musicControl::musicControl(QObject *parent) : QObject(parent)
     playlist = new QMediaPlaylist;
 }
 
+void musicControl::volumeSliderSlot(int value)
+{
+    player->setVolume(value);
+}
+
 void musicControl::setPlayList(QList<QUrl> list)
 {
     int len;
@@ -24,7 +29,6 @@ void musicControl::playThatSong(int songNumber, int /*secondUnneededParam*/)
 {
     qDebug()<<songNumber;
     playlist->setCurrentIndex(songNumber);
-    player->setVolume(50);
     player->play();
     emit setPlayingUi();
 }
@@ -57,18 +61,14 @@ void musicControl::shuffleMode(bool enable)
 
 void musicControl::playNextSong()
 {
-    qDebug()<<"next song";
     playlist->next();
-    qDebug()<<playlist->currentIndex();
     emit setIndexToUi(playlist->currentIndex(),playlist->previousIndex());
 }
 
 void musicControl::playPrevSong()
 {
-    qDebug()<<"Prev song";
     playlist->previous();
     emit setIndexToUi(playlist->currentIndex(),playlist->nextIndex());
-    qDebug()<<playlist->currentIndex();
 }
 
 void musicControl::changeState()

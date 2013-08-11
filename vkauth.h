@@ -10,6 +10,7 @@ public:
     explicit vkAuth(QWidget *parent = 0);
     QString token;
     QString uid;
+    ~vkAuth();
 private:
     int expires;
 signals:

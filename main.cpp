@@ -12,16 +12,16 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &/*context*/,
 
     case QtWarningMsg:
         txt = QString("Warning: %1").arg(msg);
-    break;
+        break;
     case QtCriticalMsg:
         txt = QString("Critical: %1").arg(msg);
-    break;
+        break;
     case QtFatalMsg:
         txt = QString("Fatal: %1").arg(msg);
         abort();
     }
 
-    QFile outFile("applog.txt");
+    QFile outFile("app.log");
     outFile.open(QIODevice::WriteOnly | QIODevice::Append);
     QTextStream ts(&outFile);
     ts << txt << endl;
@@ -29,11 +29,13 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &/*context*/,
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    QCoreApplication::setOrganizationName("kazak softworks");
+    QCoreApplication::setOrganizationDomain("kazak1377.16mb.com");
+    QCoreApplication::setApplicationName("QVkPlayer");
     //qInstallMessageHandler(customMessageHandler);
     qDebug()<<" \n\n\n\n\n\n\n\n\n\n";
     qDebug()<<"==========App_started=========";
     MainWindow w;
     w.show();
-    
     return a.exec();
 }
