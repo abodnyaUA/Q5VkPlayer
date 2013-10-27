@@ -47,7 +47,7 @@ void vkAuth::slotUrlChanged(QUrl url)
     QFile file("token");
     file.open(QIODevice::ReadWrite | QIODevice::Text);
     QTextStream out(&file);
-    //writing token and uid to vodiables
+    //writing token and uid to variables
     token = qurl.queryItemValue("access_token");
     expires = qurl.queryItemValue("expires_in").toInt();
     uid = qurl.queryItemValue("user_id");

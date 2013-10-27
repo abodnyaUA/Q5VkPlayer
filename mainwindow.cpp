@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     ui->setupUi(this);
     ui->lineEdit->setPlaceholderText("Search here");
     settings = new QSettings(this);
+    ///randomize seed for our random playlist
 
     ///table setting
     QStringList header;
@@ -18,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     ///write table header
     ui->musicWidget->setColumnCount(4);
     header <<"Artist"<<"Title"<<"Duration"<<"link";   //in case of unsuccesseful update....
+    ui->musicWidget->hideColumn(3);
 
     ///set table header
     ui->musicWidget->setHorizontalHeaderLabels(header);
@@ -68,6 +70,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
 
 void MainWindow::loadSettings()
 {
+    restoreGeometry(settings->value("geometry",saveGeometry()).toByteArray());
     token = settings->value("token","none").toString();
     userId = settings->value("user_id","none").toString();
     if(token == "none")
@@ -81,16 +84,7 @@ void MainWindow::saveSettings()
     settings->setValue("token",token);
     settings->setValue("user_id",userId);
     settings->setValue("volume",ui->volumeSlider->value());
-}
-
-void MainWindow::setShuffle(bool set)
-{
-    if(set)
-    {
-        for(int i=0;i<ui->musicWidget->rowCount();i++)
-        {
-        }
-    }
+    settings->setValue("geometry",saveGeometry());
 }
 
 void MainWindow::setPlayingUi()

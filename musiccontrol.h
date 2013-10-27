@@ -9,7 +9,10 @@ class musicControl : public QObject
     Q_OBJECT
     QMediaPlayer *player;
     QMediaPlaylist *playlist;
+    QMediaPlaylist *randPlaylist;
     bool shufle;
+    int currentIndex;
+    int previousIndex;
 public:
     explicit musicControl(QObject *parent = 0);
     
@@ -26,6 +29,7 @@ public slots:
     void playPrevSong();
     void changeState();
     void volumeSliderSlot(int);
+    void shuffleSongs(QList<QUrl> normalList);
     //void repeatMode(bool);
     
 };

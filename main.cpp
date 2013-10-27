@@ -29,7 +29,7 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &/*context*/,
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    QCoreApplication::setOrganizationName("kazak softworks");
+    QCoreApplication::setOrganizationName("kazak1377");
     QCoreApplication::setOrganizationDomain("kazak1377.16mb.com");
     QCoreApplication::setApplicationName("QVkPlayer");
     //qInstallMessageHandler(customMessageHandler);

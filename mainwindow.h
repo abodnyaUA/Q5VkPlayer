@@ -39,7 +39,6 @@ public slots:
     void setSongUi(int, int);
     void setPlayingUi();
     void setPausedUi();
-    void setShuffle(bool);
 private slots:
     void replyFinished(QNetworkReply *reply);
     void setToken(QString,QString);

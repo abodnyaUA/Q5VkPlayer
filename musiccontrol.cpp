@@ -13,6 +13,12 @@ void musicControl::volumeSliderSlot(int value)
     player->setVolume(value);
 }
 
+void musicControl::shuffleSongs(QList<QUrl> normalList)
+{
+    int size = normalList.length();
+    
+}
+
 void musicControl::setPlayList(QList<QUrl> list)
 {
     int len;
@@ -22,7 +28,6 @@ void musicControl::setPlayList(QList<QUrl> list)
         playlist->addMedia(list[i]);
     }
     player->setPlaylist(playlist);
-//    playlist->  somewere here must be an good shuffle mode;)
 }
 
 void musicControl::playThatSong(int songNumber, int /*secondUnneededParam*/)
@@ -41,14 +46,13 @@ void musicControl::setSongIndex(int index, int /*secondUnneededParam*/)
 
 void musicControl::shuffleMode(bool enable)
 {
-
+    shufle = enable;
     switch(enable)
     {
     case true:
         qDebug()<<"Set random mode";
-       // shuffle = true;
-        qsrand(QTime::currentTime().msecsTo(QTime()));
-        playlist->setPlaybackMode(QMediaPlaylist::Random);
+        // shuffle = true;
+        //playlist->setPlaybackMode(QMediaPlaylist::Random);
         //playlist->shuffle();
         break;
     case false:
@@ -61,8 +65,21 @@ void musicControl::shuffleMode(bool enable)
 
 void musicControl::playNextSong()
 {
-    playlist->next();
-    emit setIndexToUi(playlist->currentIndex(),playlist->previousIndex());
+    if(shufle)
+    {
+        QTime time = QTime::currentTime();
+        qsrand((uint)time.msec());
+        previousIndex = playlist->currentIndex();
+        currentIndex = qrand()%playlist->mediaCount();
+        playlist->setCurrentIndex(currentIndex);
+    }
+    else
+    {
+        previousIndex = playlist->currentIndex();
+        playlist->next();
+        currentIndex = playlist->currentIndex();
+    }
+    emit setIndexToUi(currentIndex,previousIndex);
 }
 
 void musicControl::playPrevSong()
