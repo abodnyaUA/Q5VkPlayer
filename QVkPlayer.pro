@@ -25,3 +25,7 @@ FORMS    += mainwindow.ui
 
 RESOURCES += \
     icons.qrc
+win32 {
+#OS WIN
+RC_FILE = winicon.rc
+ }

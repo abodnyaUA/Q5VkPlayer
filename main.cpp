@@ -36,6 +36,7 @@ int main(int argc, char *argv[])
     qDebug()<<" \n\n\n\n\n\n\n\n\n\n";
     qDebug()<<"==========App_started=========";
     MainWindow w;
+    w.setWindowIcon(QIcon("://icons/qvk.ico"));
     w.show();
     return a.exec();
 }
