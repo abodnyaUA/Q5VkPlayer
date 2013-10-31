@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
 {
     ui->setupUi(this);
     ui->lineEdit->setPlaceholderText("Search here");
+    ui->seekSlider->setRange(0,0);
     settings = new QSettings(this);
     ///randomize seed for our random playlist
 
@@ -62,6 +63,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     connect(ui->tooglePlayingButton,SIGNAL(clicked()),music,SLOT(changeState()));
     connect(music,SIGNAL(setPlayingUi()),this,SLOT(setPlayingUi()));
     connect(music,SIGNAL(setPausedUi()),this,SLOT(setPausedUi()));
+    connect(ui->seekSlider,SIGNAL(sliderMoved(int)),music,SLOT(setPosition(int)));
+    connect(music,SIGNAL(newPosition(qint64)),this,SLOT(positionChanged(qint64)));
+    connect(music,SIGNAL(newRange(qint64)),this,SLOT(durationChanged(qint64)));
     ///connection area
 
     ///CONFIG LOADING==================================
@@ -77,6 +81,7 @@ void MainWindow::loadSettings()
         loginSlot();
     ui->volumeSlider->setValue(settings->value("volume",50).toInt());
     this->getAudioList();
+    //this->offlineDebugFunction();
 }
 
 void MainWindow::saveSettings()
@@ -95,6 +100,43 @@ void MainWindow::setPlayingUi()
 void MainWindow::setPausedUi()
 {
     ui->tooglePlayingButton->setIcon(QIcon(QPixmap(":/icons/dark/gtk-media-play-ltr.png")));
+}
+
+void MainWindow::positionChanged(qint64 position)
+{
+    ui->seekSlider->setValue(position);
+}
+
+void MainWindow::durationChanged(qint64 duration)
+{
+    ui->seekSlider->setRange(0,duration);
+}
+
+void MainWindow::offlineDebugFunction()
+{
+    QStringList debugTableLine;
+    debugTableLine<<"Amy Macdonald"<<"Barrowland Ballroom"<<"03:58"<<"1.mp3";
+    this->setTableLine(debugTableLine);
+    debugTableLine.clear();
+    debugTableLine<<"Amy Macdonald"<<"This is the life"<<"03:06"<<"2.mp3";
+    this->setTableLine(debugTableLine);
+    debugTableLine.clear();
+    debugTableLine<<"Год змеи"<<"Секс и рок-н-ролл"<<"03:04"<<"3.mp3";
+    this->setTableLine(debugTableLine);
+    debugTableLine.clear();
+    debugTableLine<<"One Republic"<<"All The Right Moves"<<"03:58"<<"4.mp3";
+    this->setTableLine(debugTableLine);
+    debugTableLine.clear();
+    debugTableLine<<"One Republic"<<"Everybody Loves Me"<<"3:40"<<"5.mp3";
+    this->setTableLine(debugTableLine);
+    debugTableLine.clear();
+    QList<QUrl> plst;
+    plst.append(QUrl("1.mp3"));
+    plst.append(QUrl("2.mp3"));
+    plst.append(QUrl("3.mp3"));
+    plst.append(QUrl("4.mp3"));
+    plst.append(QUrl("5.mp3"));
+    emit setPlayingOrder(plst);
 }
 
 void MainWindow::setSongUi(int current,int prev)
@@ -232,6 +274,7 @@ void MainWindow::replyFinished(QNetworkReply *reply)
         qDebug()<<reply->errorString();
     }
     emit setPlayingOrder(linkList);
+    qDebug()<<"reply finished";
 }
 
 void MainWindow::getAudioList()    //it is our request function

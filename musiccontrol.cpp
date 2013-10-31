@@ -6,6 +6,8 @@ musicControl::musicControl(QObject *parent) : QObject(parent)
     shufle = false;
     player = new QMediaPlayer;
     playlist = new QMediaPlaylist;
+    connect(player,SIGNAL(positionChanged(qint64)),this,SIGNAL(newPosition(qint64)));
+    connect(player,SIGNAL(durationChanged(qint64)),this,SIGNAL(newRange(qint64)));
 }
 
 void musicControl::volumeSliderSlot(int value)
@@ -17,6 +19,11 @@ void musicControl::shuffleSongs(QList<QUrl> normalList)
 {
     int size = normalList.length();
     
+}
+
+void musicControl::setPosition(int position)
+{
+    player->setPosition(position);
 }
 
 void musicControl::setPlayList(QList<QUrl> list)
@@ -47,20 +54,6 @@ void musicControl::setSongIndex(int index, int /*secondUnneededParam*/)
 void musicControl::shuffleMode(bool enable)
 {
     shufle = enable;
-    switch(enable)
-    {
-    case true:
-        qDebug()<<"Set random mode";
-        // shuffle = true;
-        //playlist->setPlaybackMode(QMediaPlaylist::Random);
-        //playlist->shuffle();
-        break;
-    case false:
-        qDebug()<<"Set normal mode";
-        //shuffle = false;
-        playlist->setPlaybackMode(QMediaPlaylist::Sequential);
-        break;
-    }
 }
 
 void musicControl::playNextSong()
@@ -76,10 +69,12 @@ void musicControl::playNextSong()
     else
     {
         previousIndex = playlist->currentIndex();
-        playlist->next();
+        if(previousIndex != playlist->mediaCount()-1)
+            playlist->next();
         currentIndex = playlist->currentIndex();
     }
     emit setIndexToUi(currentIndex,previousIndex);
+    qDebug()<<currentIndex;
 }
 
 void musicControl::playPrevSong()

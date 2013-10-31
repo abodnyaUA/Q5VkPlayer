@@ -39,6 +39,9 @@ public slots:
     void setSongUi(int, int);
     void setPlayingUi();
     void setPausedUi();
+    void positionChanged(qint64 position);
+    void durationChanged(qint64 duration);
+    void offlineDebugFunction();
 private slots:
     void replyFinished(QNetworkReply *reply);
     void setToken(QString,QString);

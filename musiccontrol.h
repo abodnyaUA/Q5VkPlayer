@@ -20,6 +20,8 @@ signals:
     void setIndexToUi(int,int);
     void setPlayingUi();
     void setPausedUi();
+    void newRange(qint64);
+    void newPosition(qint64);
 public slots:
     void setPlayList(QList<QUrl> list);
     void playThatSong(int,int);
@@ -30,6 +32,7 @@ public slots:
     void changeState();
     void volumeSliderSlot(int);
     void shuffleSongs(QList<QUrl> normalList);
+    void setPosition(int position);
     //void repeatMode(bool);
     
 };
