@@ -11,12 +11,12 @@ It's now based on qt5, so packege size is incresed, but for now it can play
 any song from your Vk playlist.
 
 Current version is 0.1a it can:
-1.Login to your vk accaunt;
-2.load your playlist
-3.Play song by double ckick
-4.play random song
-5.Search in current playlist
-6.Volume slider in right bottom corner
+1.Login to your vk accaunt;<br>
+2.load your playlist<br>
+3.Play song by double ckick<br>
+4.play random song<br>
+5.Search in current playlist<br>
+6.Volume slider in right bottom corner<br>
 
 You can get an package from here:
 https://dl.dropboxusercontent.com/u/49831443/QVkPlayer.zip
