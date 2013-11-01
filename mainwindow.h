@@ -45,6 +45,7 @@ public slots:
 private slots:
     void replyFinished(QNetworkReply *reply);
     void setToken(QString,QString);
+    void currentSearch(QString text);
     void about();
     
 private:

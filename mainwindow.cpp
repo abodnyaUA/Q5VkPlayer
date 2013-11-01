@@ -66,6 +66,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     connect(ui->seekSlider,SIGNAL(sliderMoved(int)),music,SLOT(setPosition(int)));
     connect(music,SIGNAL(newPosition(qint64)),this,SLOT(positionChanged(qint64)));
     connect(music,SIGNAL(newRange(qint64)),this,SLOT(durationChanged(qint64)));
+    connect(ui->lineEdit,SIGNAL(textChanged(QString)),this,SLOT(currentSearch(QString)));
     ///connection area
 
     ///CONFIG LOADING==================================
@@ -141,6 +142,10 @@ void MainWindow::offlineDebugFunction()
 
 void MainWindow::setSongUi(int current,int prev)
 {
+    QFont boldFont;
+    boldFont.setBold(true);
+    QFont regularFont;
+    regularFont.setBold(false);
     ui->musicWidget->scrollToItem(ui->musicWidget->item(current,0));
     this->setWindowTitle(ui->musicWidget->item(current,0)->text()+"  -  "+
                          ui->musicWidget->item(current,1)->text());
@@ -148,11 +153,21 @@ void MainWindow::setSongUi(int current,int prev)
     ui->musicWidget->item(current,1)->setSelected(true);
     ui->musicWidget->item(current,2)->setSelected(true);
     ui->musicWidget->item(current,3)->setSelected(true);
-
-    ui->musicWidget->item(prev,0)->setSelected(false);
-    ui->musicWidget->item(prev,1)->setSelected(false);
-    ui->musicWidget->item(prev,2)->setSelected(false);
-    ui->musicWidget->item(prev,3)->setSelected(false);
+    ui->musicWidget->item(current,0)->setFont(boldFont);
+    ui->musicWidget->item(current,1)->setFont(boldFont);
+    ui->musicWidget->item(current,2)->setFont(boldFont);
+    ui->musicWidget->item(current,3)->setFont(boldFont);
+    if(current != prev)
+    {
+        ui->musicWidget->item(prev,0)->setSelected(false);
+        ui->musicWidget->item(prev,1)->setSelected(false);
+        ui->musicWidget->item(prev,2)->setSelected(false);
+        ui->musicWidget->item(prev,3)->setSelected(false);
+        ui->musicWidget->item(prev,0)->setFont(regularFont);
+        ui->musicWidget->item(prev,1)->setFont(regularFont);
+        ui->musicWidget->item(prev,2)->setFont(regularFont);
+        ui->musicWidget->item(prev,3)->setFont(regularFont);
+    }
 }
 
 void MainWindow::loginSlot()
@@ -181,6 +196,25 @@ void MainWindow::setToken(QString value,QString value2)
     token = value;
     userId = value2;
     this->getAudioList();
+}
+
+void MainWindow::currentSearch(QString text)
+{
+    qDebug()<<"USER IS SEARCHING======================================";
+    ui->lineEdit->setStyleSheet("QLineEdit{background: #FFFFFF;}");    //white for search line
+    qDebug()<<text;
+    QList<QTableWidgetItem *> foundList;
+    foundList = ui->musicWidget->findItems(text,Qt::MatchContains);
+    if(!foundList.isEmpty())
+    {
+        qDebug()<<"Found at row: " ;
+        qDebug()<<foundList[0]->row()+1;
+        ui->musicWidget->selectRow(foundList[0]->row());
+    }
+    else
+    {
+        ui->lineEdit->setStyleSheet("QLineEdit{background: #FF6666;}");   //error for the searchline
+    }
 }
 
 QString MainWindow :: durationToHuman(int d)
