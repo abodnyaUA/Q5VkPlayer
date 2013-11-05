@@ -12,6 +12,7 @@ class musicControl : public QObject
     bool shufle;
     int currentIndex;
     int previousIndex;
+    QStack<int> history;
 public:
     explicit musicControl(QObject *parent = 0);
     
@@ -31,6 +32,7 @@ public slots:
     void changeState();
     void volumeSliderSlot(int);
     void setPosition(int position);
+    void stateHandler(QMediaPlayer::MediaStatus);
     //void repeatMode(bool);
     
 };

@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName("kazak1377");
     QCoreApplication::setOrganizationDomain("kazak1377.16mb.com");
     QCoreApplication::setApplicationName("QVkPlayer");
-    //qInstallMessageHandler(customMessageHandler);
+    qInstallMessageHandler(customMessageHandler);
     qDebug()<<" \n\n\n\n\n\n\n\n\n\n";
     qDebug()<<"==========App_started=========";
     MainWindow w;

@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     ui->lineEdit->setPlaceholderText("Search here");
     ui->seekSlider->setRange(0,0);
     settings = new QSettings(this);
+    ui->repeatButton->hide();
     ///randomize seed for our random playlist
 
     ///table setting
@@ -31,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     ui->musicWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->musicWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->musicWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->musicWidget->setSelectionMode(QAbstractItemView::SingleSelection);
     //connect(ui->toolButton,SIGNAL(clicked()),SLOT(loginSlot()));
 
     ////////////////////////////////////////////////Creating actions
@@ -137,6 +139,7 @@ void MainWindow::offlineDebugFunction()
     plst.append(QUrl("3.mp3"));
     plst.append(QUrl("4.mp3"));
     plst.append(QUrl("5.mp3"));
+    qDebug()<<plst;
     emit setPlayingOrder(plst);
 }
 
