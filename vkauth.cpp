@@ -12,14 +12,14 @@ vkAuth::vkAuth(QWidget *parent) : QWebView(parent)
 {
     connect(this, SIGNAL(urlChanged(QUrl)), SLOT(slotUrlChanged(QUrl)));
     QUrl url("https://oauth.vk.com/authorize?");
-    QUrlQuery turl;
-    turl.addQueryItem("client_id", "3652252");  //HERE second param is my app_id, which get from vk.com
-    turl.addQueryItem("display", "popup");
-    turl.addQueryItem("type", "browser");
-    turl.addQueryItem("scope", "audio,offline");
-    turl.addQueryItem("redirect_uri", "https://oauth.vk.com/blank.html");
-    turl.addQueryItem("response_type", "token");
-    url.setQuery(turl);
+    QUrlQuery urlQuery;
+    urlQuery.addQueryItem("client_id", "3652252");  //HERE second param is my app_id, which get from vk.com
+    urlQuery.addQueryItem("display", "popup");
+    urlQuery.addQueryItem("type", "browser");
+    urlQuery.addQueryItem("scope", "audio,offline");
+    urlQuery.addQueryItem("redirect_uri", "https://oauth.vk.com/blank.html");
+    urlQuery.addQueryItem("response_type", "token");
+    url.setQuery(urlQuery);
     qDebug()<<url;
     this->load(url);
     qDebug()<<"default constructor:";
@@ -43,20 +43,10 @@ void vkAuth::slotUrlChanged(QUrl url)
         qDebug()<<"Accsess denided";
         return;
     }
-    //creating cookie file
-    QFile file("token");
-    file.open(QIODevice::ReadWrite | QIODevice::Text);
-    QTextStream out(&file);
     //writing token and uid to variables
     token = qurl.queryItemValue("access_token");
     expires = qurl.queryItemValue("expires_in").toInt();
     uid = qurl.queryItemValue("user_id");
-    //... and to file
-    out<<token;
-    out<<"\n"<<uid;
-    file.close();
-    //now we should have an token file
-    qDebug()<<"Token file writed";
     qDebug()<<"TOKEN:" << token;
     qDebug()<<"USER_ID:"<<uid;
     qDebug()<<"\n===============login finished==========\n";

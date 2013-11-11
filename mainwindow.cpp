@@ -5,35 +5,52 @@
 #include <QUrlQuery>
 #include "musiccontrol.h"
 #include <QSettings>
+#include <QSystemTrayIcon>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    music = new musicControl;
     ui->lineEdit->setPlaceholderText("Search here");
     ui->seekSlider->setRange(0,0);
     settings = new QSettings(this);
     ui->repeatButton->hide();
-    ///randomize seed for our random playlist
 
+
+    ///tray icon setup
+    QAction *next = new QAction(tr("Next"),this);
+    QAction *restore = new QAction(tr("Show window"),this);
+    QAction *prev = new QAction(tr("Previous"),this);
+    QAction *playPause = new QAction(tr("Play/Pause"),this);
+    QAction *close = new QAction(tr("Exit"),this);
+    connect(next,SIGNAL(triggered()),music,SLOT(playNextSong()));
+    connect(prev,SIGNAL(triggered()),music,SLOT(playPrevSong()));
+    connect(playPause,SIGNAL(triggered()),music,SLOT(changeState()));
+    connect(close,SIGNAL(triggered()),qApp,SLOT(quit()));
+    connect(restore,SIGNAL(triggered()),this,SLOT(show()));
+    QMenu *trayIconMenu = new QMenu(this);
+    trayIconMenu->addAction(restore);
+    trayIconMenu->addAction(next);
+    trayIconMenu->addAction(prev);
+    trayIconMenu->addAction(playPause);
+    trayIconMenu->addAction(close);
+    trayIcon = new QSystemTrayIcon(QIcon(":/icons/qvk.png"));
+    trayIcon->setContextMenu(trayIconMenu);
+    trayIcon->show();
+    connect(trayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,
+            SLOT(trayHandler(QSystemTrayIcon::ActivationReason)));
     ///table setting
     QStringList header;
-
-    ///write table header
     ui->musicWidget->setColumnCount(4);
     header <<"Artist"<<"Title"<<"Duration"<<"link";   //in case of unsuccesseful update....
     ui->musicWidget->hideColumn(3);
-
-    ///set table header
     ui->musicWidget->setHorizontalHeaderLabels(header);
     ui->musicWidget->verticalHeader()->setVisible(false);
     ui->musicWidget->setShowGrid(false);
-
-    ///ui->musicWidget->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
     ui->musicWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->musicWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->musicWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->musicWidget->setSelectionMode(QAbstractItemView::SingleSelection);
-    //connect(ui->toolButton,SIGNAL(clicked()),SLOT(loginSlot()));
 
     ////////////////////////////////////////////////Creating actions
     QAction *login = new QAction(tr("Login"),this);
@@ -42,18 +59,17 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     connect(refrsh,SIGNAL(triggered()),this,SLOT(getAudioList()));
     connect(login, SIGNAL(triggered()), this, SLOT(loginSlot()));
     connect(About, SIGNAL(triggered()), this, SLOT(about()));
-
     ////////////////////////////////////////////////Creating menu
-    QMenu *eyemenu = new QMenu("Options", ui->toolButton);
-    eyemenu->addAction(refrsh);
-    eyemenu->addAction(login);
-    eyemenu->addSeparator();
-    eyemenu->addAction(About);
+    QMenu *gearButtonMenu = new QMenu("Options", ui->toolButton);
+    gearButtonMenu->addAction(refrsh);
+    gearButtonMenu->addAction(login);
+    gearButtonMenu->addSeparator();
+    gearButtonMenu->addAction(About);
+    gearButtonMenu->addAction(close);
     ///////////////////////////////////////////////making menu button
-    ui->toolButton->setMenu(eyemenu);
+    ui->toolButton->setMenu(gearButtonMenu);
 
     ///connection area
-    /*musicControl **/music = new musicControl;
     connect(this,SIGNAL(setPlayingOrder(QList<QUrl>)),music,SLOT(setPlayList(QList<QUrl>)));
     connect(ui->volumeSlider,SIGNAL(valueChanged(int)),music,SLOT(volumeSliderSlot(int)));
     connect(ui->musicWidget,SIGNAL(cellDoubleClicked(int,int)),music,SLOT(playThatSong(int,int)));
@@ -93,6 +109,15 @@ void MainWindow::saveSettings()
     settings->setValue("user_id",userId);
     settings->setValue("volume",ui->volumeSlider->value());
     settings->setValue("geometry",saveGeometry());
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if (trayIcon->isVisible())
+    {
+        this->hide();
+        event->ignore();
+    }
 }
 
 void MainWindow::setPlayingUi()
@@ -143,15 +168,24 @@ void MainWindow::offlineDebugFunction()
     emit setPlayingOrder(plst);
 }
 
-void MainWindow::setSongUi(int current,int prev)
+void MainWindow::setSongUi(int current,int /*prev*/)
 {
     QFont boldFont;
     boldFont.setBold(true);
     QFont regularFont;
     regularFont.setBold(false);
+    const int rowCount = ui->musicWidget->rowCount();
+    const int columnCount = ui->musicWidget->columnCount();
+    for(int i = 0; i < rowCount; ++i) {
+        for(int j = 0; j < columnCount; ++j) {
+            ui->musicWidget->item(i, j)->setFont(regularFont);
+        }
+    }
     ui->musicWidget->scrollToItem(ui->musicWidget->item(current,0));
     this->setWindowTitle(ui->musicWidget->item(current,0)->text()+"  -  "+
                          ui->musicWidget->item(current,1)->text());
+    ui->musicWidget->setStyleSheet("QTableWidget{font-weight: normal;}");
+    ui->musicWidget->clearSelection();
     ui->musicWidget->item(current,0)->setSelected(true);
     ui->musicWidget->item(current,1)->setSelected(true);
     ui->musicWidget->item(current,2)->setSelected(true);
@@ -160,17 +194,6 @@ void MainWindow::setSongUi(int current,int prev)
     ui->musicWidget->item(current,1)->setFont(boldFont);
     ui->musicWidget->item(current,2)->setFont(boldFont);
     ui->musicWidget->item(current,3)->setFont(boldFont);
-    if(current != prev)
-    {
-        ui->musicWidget->item(prev,0)->setSelected(false);
-        ui->musicWidget->item(prev,1)->setSelected(false);
-        ui->musicWidget->item(prev,2)->setSelected(false);
-        ui->musicWidget->item(prev,3)->setSelected(false);
-        ui->musicWidget->item(prev,0)->setFont(regularFont);
-        ui->musicWidget->item(prev,1)->setFont(regularFont);
-        ui->musicWidget->item(prev,2)->setFont(regularFont);
-        ui->musicWidget->item(prev,3)->setFont(regularFont);
-    }
 }
 
 void MainWindow::loginSlot()
@@ -186,12 +209,27 @@ void MainWindow::about()
     QMessageBox::information(this, tr("About QVkPlayer"),
                              tr("It is a Player for playing music from Your Vkontakte playlist.\n"
                                 "More features will be avalible later.\n"
-                                "\tfirst released version  'alpha 0.1'\n"
+                                "\tfirst released version  'alpha 0.3'\n"
                                 " credits:\n"
                                 "\tMe: kazak1377(Maxim Kozachenko)\n"
                                 "Thanks to:\n"
                                 "\tQt team\n"
                                 "\tmembers of c_plus_plus jabber.ru conference"));
+}
+
+void MainWindow::fullExit()
+{
+    delete this;
+}
+
+void MainWindow::trayHandler(QSystemTrayIcon::ActivationReason reason)
+{
+    if(reason == QSystemTrayIcon::DoubleClick)
+    {
+        setWindowState(windowState() & ~Qt::WindowMinimized | Qt::WindowActive);
+        show();
+        activateWindow();
+    }
 }
 
 void MainWindow::setToken(QString value,QString value2)
@@ -335,6 +373,9 @@ void MainWindow::getAudioList()    //it is our request function
 
 MainWindow::~MainWindow()
 {
+    trayIcon->hide();
     saveSettings();
     delete ui;
+    delete trayIcon;
+    delete music;
 }

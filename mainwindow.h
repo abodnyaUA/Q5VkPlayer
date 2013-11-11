@@ -13,6 +13,7 @@
 #include <QFile>
 #include "musiccontrol.h"
 #include <QSettings>
+#include <QSystemTrayIcon>
 
 
 
@@ -30,6 +31,9 @@ class MainWindow : public QMainWindow
     QString durationToHuman(int d);
     void setTableLine(QStringList line);
     musicControl *music;
+    QSystemTrayIcon *trayIcon;
+    void closeEvent(QCloseEvent *event);
+
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -47,6 +51,8 @@ private slots:
     void setToken(QString,QString);
     void currentSearch(QString text);
     void about();
+    void fullExit();
+    void trayHandler(QSystemTrayIcon::ActivationReason reason);
     
 private:
     Ui::MainWindow *ui;

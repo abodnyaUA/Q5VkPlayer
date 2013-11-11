@@ -2,6 +2,8 @@
 #include <QApplication>
 #include <QTextCodec>
 
+
+#ifdef QT_NO_DEBUG
 void customMessageHandler(QtMsgType type, const QMessageLogContext &/*context*/, const QString &msg)
 {
     QString txt;
@@ -26,17 +28,23 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &/*context*/,
     QTextStream ts(&outFile);
     ts << txt << endl;
 }
+#endif
+
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     QCoreApplication::setOrganizationName("kazak1377");
     QCoreApplication::setOrganizationDomain("kazak1377.16mb.com");
     QCoreApplication::setApplicationName("QVkPlayer");
+#ifdef QT_NO_DEBUG
     qInstallMessageHandler(customMessageHandler);
+#endif
     qDebug()<<" \n\n\n\n\n\n\n\n\n\n";
     qDebug()<<"==========App_started=========";
+    a.addLibraryPath(a.applicationDirPath());
     MainWindow w;
-    w.setWindowIcon(QIcon("://icons/qvk.ico"));
+    w.setWindowIcon(QIcon(":/icons/qvk.ico"));
     w.show();
     return a.exec();
 }

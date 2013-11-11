@@ -8,7 +8,6 @@ musicControl::musicControl(QObject *parent) : QObject(parent)
     playlist = new QMediaPlaylist;
     currentIndex = 0;
     previousIndex = 0;
-    //history.push(previousIndex);
     connect(player,SIGNAL(positionChanged(qint64)),this,SIGNAL(newPosition(qint64)));
     connect(player,SIGNAL(durationChanged(qint64)),this,SIGNAL(newRange(qint64)));
     connect(player,SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)),
@@ -38,7 +37,7 @@ void musicControl::stateHandler(QMediaPlayer::MediaStatus state)
         //qDebug()<<"loading media";
         break;
     case QMediaPlayer::LoadedMedia:
-       // qDebug()<<"loaded media";
+        // qDebug()<<"loaded media";
         break;
     case QMediaPlayer::StalledMedia:
         //qDebug()<<"Stalled media";
@@ -68,11 +67,10 @@ void musicControl::stateHandler(QMediaPlayer::MediaStatus state)
 
 void musicControl::setPlayList(QList<QUrl> list)
 {
-    int len;
-    len = list.count();
-    for(int i=0;i<len;i++)
+    QUrl var;
+    foreach (var, list)
     {
-        playlist->addMedia(list[i]);
+        playlist->addMedia(var);
     }
     player->setPlaylist(playlist);
 }

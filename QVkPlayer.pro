@@ -15,13 +15,18 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     vkauth.cpp \
-    musiccontrol.cpp
+    musiccontrol.cpp \
+    networker.cpp \
+    prefwindow.cpp
 
 HEADERS  += mainwindow.h \
     vkauth.h \
-    musiccontrol.h
+    musiccontrol.h \
+    networker.h \
+    prefwindow.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    prefwindow.ui
 
 RESOURCES += \
     icons.qrc
