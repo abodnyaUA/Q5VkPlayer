@@ -2,7 +2,6 @@
 #include "ui_mainwindow.h"
 #include "vkauth.h"
 #include "qdebug.h"
-#include <QUrlQuery>
 #include "musiccontrol.h"
 #include <QSettings>
 #include <QSystemTrayIcon>
@@ -11,11 +10,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
 {
     ui->setupUi(this);
     music = new musicControl;
+    netCore = new netWorker;
     ui->lineEdit->setPlaceholderText("Search here");
     ui->seekSlider->setRange(0,0);
     settings = new QSettings(this);
-    ui->repeatButton->hide();
-
+ 
 
     ///tray icon setup
     QAction *next = new QAction(tr("Next"),this);
@@ -56,8 +55,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     QAction *login = new QAction(tr("Login"),this);
     QAction *About = new QAction(tr("About"),this);
     QAction *refrsh = new QAction(tr("Refresh"),this);
-    connect(refrsh,SIGNAL(triggered()),this,SLOT(getAudioList()));
-    connect(login, SIGNAL(triggered()), this, SLOT(loginSlot()));
+    connect(refrsh,SIGNAL(triggered()), netCore, SLOT(getAudioList()));
+    connect(login, SIGNAL(triggered()), netCore, SLOT(loginSlot()));
     connect(About, SIGNAL(triggered()), this, SLOT(about()));
     ////////////////////////////////////////////////Creating menu
     QMenu *gearButtonMenu = new QMenu("Options", ui->toolButton);
@@ -73,7 +72,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     connect(this,SIGNAL(setPlayingOrder(QList<QUrl>)),music,SLOT(setPlayList(QList<QUrl>)));
     connect(ui->volumeSlider,SIGNAL(valueChanged(int)),music,SLOT(volumeSliderSlot(int)));
     connect(ui->musicWidget,SIGNAL(cellDoubleClicked(int,int)),music,SLOT(playThatSong(int,int)));
-    connect(ui->musicWidget,SIGNAL(cellClicked(int,int)),music,SLOT(setSongIndex(int,int)));
     connect(ui->shuffButton,SIGNAL(toggled(bool)),music,SLOT(shuffleMode(bool)));
     connect(ui->nextButton,SIGNAL(clicked()),music,SLOT(playNextSong()));
     connect(music,SIGNAL(setIndexToUi(int,int)),this,SLOT(setSongUi(int,int)));
@@ -85,6 +83,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     connect(music,SIGNAL(newPosition(qint64)),this,SLOT(positionChanged(qint64)));
     connect(music,SIGNAL(newRange(qint64)),this,SLOT(durationChanged(qint64)));
     connect(ui->lineEdit,SIGNAL(textChanged(QString)),this,SLOT(currentSearch(QString)));
+    connect(this,SIGNAL(loadToken(QString,QString)),netCore,SLOT(setToken(QString,QString)));
+    connect(netCore,SIGNAL(audioListGet(QList<QUrl>)),music,SLOT(setPlayList(QList<QUrl>)));
+    connect(ui->musicWidget,SIGNAL(cellClicked(int,int)),music,SLOT(setSelectedSong(int,int)));
+    connect(netCore,SIGNAL(dataGot()),this,SLOT(setMusicTable()));
     ///connection area
 
     ///CONFIG LOADING==================================
@@ -94,19 +96,17 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
 void MainWindow::loadSettings()
 {
     restoreGeometry(settings->value("geometry",saveGeometry()).toByteArray());
-    token = settings->value("token","none").toString();
-    userId = settings->value("user_id","none").toString();
-    if(token == "none")
-        loginSlot();
     ui->volumeSlider->setValue(settings->value("volume",50).toInt());
-    this->getAudioList();
-    //this->offlineDebugFunction();
+    QString localToken = settings->value("token","none").toString();
+    QString localUid = settings->value("user_id","none").toString();
+    emit loadToken(localToken,localUid);
+    netCore->getAudioList();
 }
 
 void MainWindow::saveSettings()
 {
-    settings->setValue("token",token);
-    settings->setValue("user_id",userId);
+    settings->setValue("token",netCore->getToken());
+    settings->setValue("user_id",netCore->getUid());
     settings->setValue("volume",ui->volumeSlider->value());
     settings->setValue("geometry",saveGeometry());
 }
@@ -196,20 +196,13 @@ void MainWindow::setSongUi(int current,int /*prev*/)
     ui->musicWidget->item(current,3)->setFont(boldFont);
 }
 
-void MainWindow::loginSlot()
-{
-    vkAuth *loginWindow = new vkAuth;
-    QObject::connect(loginWindow,SIGNAL(tokenSet(QString,QString)),SLOT(setToken(QString,QString)));
-    loginWindow->show();
-    qDebug()<<"Login window loaded.....";
-}
 
 void MainWindow::about()
 {
     QMessageBox::information(this, tr("About QVkPlayer"),
                              tr("It is a Player for playing music from Your Vkontakte playlist.\n"
                                 "More features will be avalible later.\n"
-                                "\tfirst released version  'alpha 0.3'\n"
+                                "\tfirst released version  'alpha 0.4'\n"
                                 " credits:\n"
                                 "\tMe: kazak1377(Maxim Kozachenko)\n"
                                 "Thanks to:\n"
@@ -217,26 +210,15 @@ void MainWindow::about()
                                 "\tmembers of c_plus_plus jabber.ru conference"));
 }
 
-void MainWindow::fullExit()
-{
-    delete this;
-}
 
 void MainWindow::trayHandler(QSystemTrayIcon::ActivationReason reason)
 {
     if(reason == QSystemTrayIcon::DoubleClick)
     {
-        setWindowState(windowState() & ~Qt::WindowMinimized | Qt::WindowActive);
+        setWindowState((windowState() & ~Qt::WindowMinimized) | Qt::WindowActive);
         show();
         activateWindow();
     }
-}
-
-void MainWindow::setToken(QString value,QString value2)
-{
-    token = value;
-    userId = value2;
-    this->getAudioList();
 }
 
 void MainWindow::currentSearch(QString text)
@@ -278,97 +260,35 @@ void MainWindow::setTableLine(QStringList line)
     ui->musicWidget->insertRow(lastRow);
     for(int i=0;i<=3;i++)
     {
-        QTableWidgetItem *item=new QTableWidgetItem (line[i]);
+        QTableWidgetItem *item;
+        if(i==2)
+            item=new QTableWidgetItem (durationToHuman(line[i].toInt()));
+        else
+            item=new QTableWidgetItem (line[i]);
         ui->musicWidget->setItem(lastRow,i,item);
     }
 }
 
-void MainWindow::replyFinished(QNetworkReply *reply)
-{
-    if(reply->error() == QNetworkReply::NoError)
-    {
-        qDebug()<<"Audio list get";
-        QXmlStreamReader xml(reply);
-        while(!xml.atEnd() && !xml.hasError())
-        {
-            /* Read next element.*/
-            QXmlStreamReader::TokenType token = xml.readNext();
-            /* If token is just StartDocument, we'll go to next.*/
-            if(token == QXmlStreamReader::StartDocument)
-            {
-                continue;
-            }
-            /* If token is StartElement, we'll see if we can read it.*/
-            if(token == QXmlStreamReader::StartElement)
-            {
-                /* If it's named persons, we'll go to the next.*/
-                if(xml.name() == "audio")
-                {
-                    tableLine.clear();
-                    continue;
-                }
-                /* If it's named person, we'll dig the information from there.*/
-                if(xml.name() == "artist")
-                {
-                    tableLine.append(xml.readElementText());
-                }
-                if(xml.name() == "title")
-                {
-                    tableLine.append(xml.readElementText());
-                }
-                if(xml.name() == "duration")
-                {
-                    QString duration;
-                    duration = durationToHuman(xml.readElementText().toInt());
-                    tableLine.append(duration);
-                }
-                if(xml.name() == "url")
-                {
-                    QString line = xml.readElementText();
-                    tableLine.append(line);
-                    linkList.append(QUrl(line));
-                    setTableLine(tableLine);
-                }
 
-            }
-        }
-        /* Error handling. */
-        if(xml.hasError())
-        {
-            QMessageBox::critical(this,
-                                  "QXSRExample::parseXML",
-                                  xml.errorString(),
-                                  QMessageBox::Ok);
-        }
-        /* Removes any device() or data from the reader
-            * and resets its internal state to the initial state. */
-        xml.clear();
-    }
-    else
-    {
-        qDebug()<<reply->errorString();
-    }
-    emit setPlayingOrder(linkList);
-    qDebug()<<"reply finished";
-}
-
-void MainWindow::getAudioList()    //it is our request function
+void MainWindow::setMusicTable()
 {
-    linkList.clear();
-    QUrl rAudioUrl("https://api.vk.com/method/audio.get.xml?");
-    QUrlQuery tmpUrl;
-    ui->musicWidget->clear();
+    setPausedUi();
     ui->musicWidget->setRowCount(0);
+    ui->musicWidget->clear();
+    ui->musicWidget->cellClicked(0,0);
+    music->clearHistory();
     QStringList header;
-    header <<"Artist"<<"Title"<<"Duration"<< "link";
+    ui->musicWidget->setColumnCount(4);
+    header <<"Artist"<<"Title"<<"Duration"<<"link";
+    ui->musicWidget->hideColumn(3);
     ui->musicWidget->setHorizontalHeaderLabels(header);
-    tmpUrl.addQueryItem("uid", userId);
-    tmpUrl.addQueryItem("access_token", token);
-    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    connect(manager, SIGNAL(finished(QNetworkReply*)),this, SLOT(replyFinished(QNetworkReply*)));
-    rAudioUrl.setQuery(tmpUrl);
-    qDebug() << rAudioUrl;
-    manager->get(QNetworkRequest(rAudioUrl));
+    ui->musicWidget->verticalHeader()->setVisible(false);
+    QList<QStringList> songsTable = netCore->getSongsTable();
+    QStringList tableLine;
+    foreach (tableLine, songsTable)
+    {
+        this->setTableLine(tableLine);
+    }
 }
 
 MainWindow::~MainWindow()

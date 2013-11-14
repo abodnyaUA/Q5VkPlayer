@@ -13,9 +13,10 @@ class musicControl : public QObject
     int currentIndex;
     int previousIndex;
     QStack<int> history;
+    int selectedSong;
 public:
     explicit musicControl(QObject *parent = 0);
-    
+    void clearHistory();
 signals:
     void setIndexToUi(int,int);
     void setPlayingUi();
@@ -25,7 +26,6 @@ signals:
 public slots:
     void setPlayList(QList<QUrl> list);
     void playThatSong(int,int);
-    void setSongIndex(int,int);
     void shuffleMode(bool);
     void playNextSong();
     void playPrevSong();
@@ -33,6 +33,7 @@ public slots:
     void volumeSliderSlot(int);
     void setPosition(int position);
     void stateHandler(QMediaPlayer::MediaStatus);
+    void setSelectedSong(int,int);
     //void repeatMode(bool);
     
 };

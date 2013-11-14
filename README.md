@@ -10,7 +10,7 @@ And i desiged it to be simple and easy to use.
 It's now based on qt5, so packege size is incresed, but for now it can play 
 any song from your Vk playlist.
 
-Current version is 0.3a it can:
+Current version is 0.1a it can:
 1.Login to your vk account;<br>
 2.load your playlist<br>
 3.Play song by double ckick<br>

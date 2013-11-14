@@ -3,6 +3,7 @@
 
 musicControl::musicControl(QObject *parent) : QObject(parent)
 {
+    selectedSong = 0;
     shufle = false;
     player = new QMediaPlayer;
     playlist = new QMediaPlaylist;
@@ -12,6 +13,11 @@ musicControl::musicControl(QObject *parent) : QObject(parent)
     connect(player,SIGNAL(durationChanged(qint64)),this,SIGNAL(newRange(qint64)));
     connect(player,SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)),
             this,SLOT(stateHandler(QMediaPlayer::MediaStatus)));
+}
+
+void musicControl::clearHistory()
+{
+    history.clear();
 }
 
 void musicControl::volumeSliderSlot(int value)
@@ -49,14 +55,7 @@ void musicControl::stateHandler(QMediaPlayer::MediaStatus state)
         //qDebug()<<"Buffered media";
         break;
     case QMediaPlayer::EndOfMedia:
-        if(shufle)
-        {
-            int rand;
-            QTime time = QTime::currentTime();
-            qsrand((uint)time.msec());
-            rand = qrand()%playlist->mediaCount();
-            playThatSong(rand,0);
-        }
+        playNextSong();
         break;
     case QMediaPlayer::InvalidMedia:
         break;
@@ -65,9 +64,15 @@ void musicControl::stateHandler(QMediaPlayer::MediaStatus state)
     }
 }
 
+void musicControl::setSelectedSong(int index, int /*secondUnneededParam*/)
+{
+    selectedSong = index;
+}
+
 void musicControl::setPlayList(QList<QUrl> list)
 {
     QUrl var;
+    playlist->clear();
     foreach (var, list)
     {
         playlist->addMedia(var);
@@ -83,19 +88,10 @@ void musicControl::playThatSong(int songNumber, int /*secondUnneededParam*/)
         history.push(previousIndex);
     player->stop();
     playlist->setCurrentIndex(songNumber);
-    qDebug()<<playlist->currentMedia().canonicalUrl();
     player->play();
     currentIndex = playlist->currentIndex();
-    qDebug()<<"cur: "<<currentIndex<<"    prev: "<<previousIndex;
-    qDebug()<<history;
     emit setPlayingUi();
     emit setIndexToUi(currentIndex,previousIndex);
-}
-
-void musicControl::setSongIndex(int index, int /*secondUnneededParam*/)
-{
-    if(player->state() == QMediaPlayer::PausedState)
-        playlist->setCurrentIndex(index);
 }
 
 void musicControl::shuffleMode(bool enable)
@@ -122,8 +118,6 @@ void musicControl::playNextSong()
             playlist->next();
         currentIndex = playlist->currentIndex();
     }
-    qDebug()<<"cur: "<<currentIndex<<"    prev: "<<previousIndex;
-    qDebug()<<history;
     emit setIndexToUi(currentIndex,previousIndex);
 }
 
@@ -139,7 +133,6 @@ void musicControl::playPrevSong()
     }
     else
         player->play();
-    qDebug()<<history;
     emit setIndexToUi(playlist->currentIndex(),localPreviousIndex);
 }
 
@@ -156,6 +149,9 @@ void musicControl::changeState()
         player->pause();
         emit setPausedUi();
         break;
+    case QMediaPlayer::StoppedState:
+        playThatSong(selectedSong,0);
+        emit setPlayingUi();
     default:
         break;
     }
