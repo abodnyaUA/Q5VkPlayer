@@ -1,32 +1,36 @@
 #include "networker.h"
 
-netWorker::netWorker(QObject *parent) : QObject(parent)
+NetWorker::~NetWorker()
+{
+}
+
+NetWorker::NetWorker(QObject *parent) : QObject(parent)
 {
     songsList.clear();
     songsTable.clear();
 }
 
-QString netWorker::getToken()
+QString NetWorker::getToken()
 {
     return token;
 }
 
-QString netWorker::getUid()
+QString NetWorker::getUid()
 {
     return userId;
 }
 
-QList<QStringList> netWorker::getSongsTable()
+QList<QStringList> NetWorker::getSongsTable()
 {
     return songsTable;
 }
 
-QList<QUrl> netWorker::getSongsList()
+QList<QUrl> NetWorker::getSongsList()
 {
     return songsList;
 }
 
-void netWorker::replyFinished(QNetworkReply *reply)
+void NetWorker::replyFinished(QNetworkReply *reply)
 {
     if(reply->error() == QNetworkReply::NoError)
     {
@@ -95,15 +99,15 @@ void netWorker::replyFinished(QNetworkReply *reply)
     qDebug()<<"reply finished";
 }
 
-void netWorker::loginSlot()
+void NetWorker::loginSlot()
 {
-    vkAuth *loginWindow = new vkAuth;
+    loginWindow = new VkAuth;
     QObject::connect(loginWindow,SIGNAL(tokenSet(QString,QString)),SLOT(setToken(QString,QString)));
     loginWindow->show();
     qDebug()<<"Login window loaded.....";
 }
 
-void netWorker::getAudioList()
+void NetWorker::getAudioList()
 {
     songsList.clear();
     songsTable.clear();
@@ -118,7 +122,7 @@ void netWorker::getAudioList()
     manager->get(QNetworkRequest(rAudioUrl));
 }
 
-void netWorker::setToken(QString value,QString value2)
+void NetWorker::setToken(QString value,QString value2)
 {
     token = value;
     userId = value2;

@@ -19,7 +19,7 @@
 #include <QDebug>
 
 
-class netWorker : public QObject
+class NetWorker : public QObject
 {
     Q_OBJECT
     QList<QStringList> songsTable;
@@ -27,10 +27,13 @@ class netWorker : public QObject
     QString token;
     QString userId;
     QStringList tableLine;
+    VkAuth *loginWindow;
+
 public:
-    explicit netWorker(QObject *parent = 0);
+    explicit NetWorker(QObject *parent = 0);
     QString getToken();
     QString getUid();
+    ~NetWorker();
 
 signals:
     void audioListGet(QList<QUrl>);

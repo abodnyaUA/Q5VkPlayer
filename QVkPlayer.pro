@@ -16,17 +16,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     vkauth.cpp \
     musiccontrol.cpp \
-    networker.cpp \
-    prefwindow.cpp
+    networker.cpp
 
 HEADERS  += mainwindow.h \
     vkauth.h \
     musiccontrol.h \
-    networker.h \
-    prefwindow.h
+    networker.h
 
-FORMS    += mainwindow.ui \
-    prefwindow.ui
+FORMS    += mainwindow.ui
 
 RESOURCES += \
     icons.qrc

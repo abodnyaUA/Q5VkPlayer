@@ -1,10 +1,11 @@
 #include "musiccontrol.h"
 #include <QtMultimedia>
 
-musicControl::musicControl(QObject *parent) : QObject(parent)
+MusicControl::MusicControl(QObject *parent) : QObject(parent)
 {
     selectedSong = 0;
     shufle = false;
+    repeat = false;
     player = new QMediaPlayer;
     playlist = new QMediaPlaylist;
     currentIndex = 0;
@@ -15,23 +16,23 @@ musicControl::musicControl(QObject *parent) : QObject(parent)
             this,SLOT(stateHandler(QMediaPlayer::MediaStatus)));
 }
 
-void musicControl::clearHistory()
+void MusicControl::clearHistory()
 {
     history.clear();
 }
 
-void musicControl::volumeSliderSlot(int value)
+void MusicControl::volumeSliderSlot(int value)
 {
     player->setVolume(value);
 }
 
 
-void musicControl::setPosition(int position)
+void MusicControl::setPosition(int position)
 {
     player->setPosition(position);
 }
 
-void musicControl::stateHandler(QMediaPlayer::MediaStatus state)
+void MusicControl::stateHandler(QMediaPlayer::MediaStatus state)
 {
     switch (state)
     {
@@ -64,12 +65,17 @@ void musicControl::stateHandler(QMediaPlayer::MediaStatus state)
     }
 }
 
-void musicControl::setSelectedSong(int index, int /*secondUnneededParam*/)
+void MusicControl::setSelectedSong(int index, int /*secondUnneededParam*/)
 {
+    qDebug()<<"selected song index: "<<index;
     selectedSong = index;
 }
 
-void musicControl::setPlayList(QList<QUrl> list)
+void MusicControl::repeatMode(bool)
+{
+}
+
+void MusicControl::setPlayList(QList<QUrl> list)
 {
     QUrl var;
     playlist->clear();
@@ -80,7 +86,7 @@ void musicControl::setPlayList(QList<QUrl> list)
     player->setPlaylist(playlist);
 }
 
-void musicControl::playThatSong(int songNumber, int /*secondUnneededParam*/)
+void MusicControl::playThatSong(int songNumber, int /*secondUnneededParam*/)
 {
     //if(currentIndex != 0)
     previousIndex = currentIndex;
@@ -94,21 +100,26 @@ void musicControl::playThatSong(int songNumber, int /*secondUnneededParam*/)
     emit setIndexToUi(currentIndex,previousIndex);
 }
 
-void musicControl::shuffleMode(bool enable)
+void MusicControl::shuffleMode(bool enable)
 {
     shufle = enable;
 }
 
-void musicControl::playNextSong()
+void MusicControl::playNextSong()
 {
     if(shufle)
     {
+        player->stop();
         QTime time = QTime::currentTime();
         qsrand((uint)time.msec());
         previousIndex = playlist->currentIndex();
         history.push(previousIndex);
-        currentIndex = qrand()%playlist->mediaCount();
+        if(repeat != true)
+            currentIndex = qrand()%playlist->mediaCount();
+        else
+            currentIndex = playlist->currentIndex();
         playlist->setCurrentIndex(currentIndex);
+        player->play();
     }
     else
     {
@@ -121,7 +132,7 @@ void musicControl::playNextSong()
     emit setIndexToUi(currentIndex,previousIndex);
 }
 
-void musicControl::playPrevSong()
+void MusicControl::playPrevSong()
 {
     int localPreviousIndex;
     localPreviousIndex = playlist->currentIndex();
@@ -136,7 +147,7 @@ void musicControl::playPrevSong()
     emit setIndexToUi(playlist->currentIndex(),localPreviousIndex);
 }
 
-void musicControl::changeState()
+void MusicControl::changeState()
 {
     QMediaPlayer::State state;
     state = player->state();

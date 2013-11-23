@@ -30,11 +30,15 @@ class MainWindow : public QMainWindow
     QList<QUrl> linkList;
     QString durationToHuman(int d);
     void setTableLine(QStringList line);
-    musicControl *music;
+    MusicControl *music;
     QSystemTrayIcon *trayIcon;
-    netWorker *netCore;
+    NetWorker *netCore;
     void closeEvent(QCloseEvent *event);
-
+    //QThread *netWorkThread;
+    //QThread *mediaThread;
+#ifdef WIN32
+    bool nativeEvent(const QByteArray &eventType, void *message, long *result);
+#endif
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();

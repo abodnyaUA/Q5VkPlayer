@@ -8,7 +8,7 @@
 #include <QUrlQuery>
 #include <QMessageBox>
 
-vkAuth::vkAuth(QWidget *parent) : QWebView(parent)
+VkAuth::VkAuth(QWidget *parent) : QWebView(parent)
 {
     connect(this, SIGNAL(urlChanged(QUrl)), SLOT(slotUrlChanged(QUrl)));
     QUrl url("https://oauth.vk.com/authorize?");
@@ -26,7 +26,7 @@ vkAuth::vkAuth(QWidget *parent) : QWebView(parent)
     qDebug()<<url;
 }
 
-void vkAuth::slotUrlChanged(QUrl url)
+void VkAuth::slotUrlChanged(QUrl url)
 {
     url = url.toString().replace("#","?");
     QUrlQuery qurl;
@@ -59,7 +59,7 @@ void vkAuth::slotUrlChanged(QUrl url)
 }
 
 
-vkAuth::~vkAuth()
+VkAuth::~VkAuth()
 {
     qDebug()<<"Login window closed";
 }

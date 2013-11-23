@@ -3,14 +3,14 @@
 
 #include <QtWebKitWidgets/QWebView>
 
-class vkAuth : public QWebView
+class VkAuth : public QWebView
 {
     Q_OBJECT
 public:
-    explicit vkAuth(QWidget *parent = 0);
+    explicit VkAuth(QWidget *parent = 0);
     QString token;
     QString uid;
-    ~vkAuth();
+    ~VkAuth();
 private:
     int expires;
 signals:

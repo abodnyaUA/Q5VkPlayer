@@ -37,6 +37,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName("kazak1377");
     QCoreApplication::setOrganizationDomain("kazak1377.16mb.com");
     QCoreApplication::setApplicationName("QVkPlayer");
+    QCoreApplication::setApplicationVersion("0.5a");
 #ifdef QT_NO_DEBUG
     qInstallMessageHandler(customMessageHandler);
 #endif

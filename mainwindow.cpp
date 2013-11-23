@@ -6,15 +6,29 @@
 #include <QSettings>
 #include <QSystemTrayIcon>
 
+#ifdef WIN32
+#include <windows.h>
+#include <qt_windows.h>
+#endif
+
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    music = new musicControl;
-    netCore = new netWorker;
+    qDebug()<<winId();
+#ifdef WIN32
+    RegisterHotKey((HWND)winId(),66613, 0, VK_MEDIA_NEXT_TRACK);
+    RegisterHotKey((HWND)winId(),66612, 0, VK_MEDIA_PREV_TRACK);
+    RegisterHotKey((HWND)winId(),66611, 0, VK_MEDIA_PLAY_PAUSE);
+#endif
+    qDebug()<<QApplication::applicationVersion();
+    music = new MusicControl;
+    netCore = new NetWorker;
+    settings = new QSettings(this);
+
     ui->lineEdit->setPlaceholderText("Search here");
     ui->seekSlider->setRange(0,0);
-    settings = new QSettings(this);
- 
+    ui->repeatButton->hide();
 
     ///tray icon setup
     QAction *next = new QAction(tr("Next"),this);
@@ -86,12 +100,34 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     connect(this,SIGNAL(loadToken(QString,QString)),netCore,SLOT(setToken(QString,QString)));
     connect(netCore,SIGNAL(audioListGet(QList<QUrl>)),music,SLOT(setPlayList(QList<QUrl>)));
     connect(ui->musicWidget,SIGNAL(cellClicked(int,int)),music,SLOT(setSelectedSong(int,int)));
+    connect(ui->repeatButton,SIGNAL(clicked(bool)),music,SLOT(repeatMode(bool)));
     connect(netCore,SIGNAL(dataGot()),this,SLOT(setMusicTable()));
     ///connection area
 
     ///CONFIG LOADING==================================
     this->loadSettings();
 }
+#ifdef WIN32
+bool MainWindow::nativeEvent(const QByteArray &eventType, void *message, long *result)  //GLOBAL HOTKEYS handler
+{
+    MSG* msg = reinterpret_cast<MSG*>(message);
+    if(msg->wParam == 66613)        //our defined wParam id for media key next track
+    {
+        ui->nextButton->click();
+    }
+    else if(msg->wParam == 66612)  //our defined wParam id for media key prev track
+    {
+        ui->prevButton->click();
+    }
+    else if(msg->wParam == 69)   //69 is wParam of media key play/pause
+    {
+        ui->tooglePlayingButton->click();
+    }
+
+    return false;
+}
+#endif
+
 
 void MainWindow::loadSettings()
 {
@@ -199,15 +235,15 @@ void MainWindow::setSongUi(int current,int /*prev*/)
 
 void MainWindow::about()
 {
-    QMessageBox::information(this, tr("About QVkPlayer"),
-                             tr("It is a Player for playing music from Your Vkontakte playlist.\n"
-                                "More features will be avalible later.\n"
-                                "\tfirst released version  'alpha 0.4'\n"
-                                " credits:\n"
-                                "\tMe: kazak1377(Maxim Kozachenko)\n"
-                                "Thanks to:\n"
-                                "\tQt team\n"
-                                "\tmembers of c_plus_plus jabber.ru conference"));
+    QString ab = "It is a Player for playing music from Your Vkontakte playlist.\n"
+            "More features will be avalible later.\n"
+            "\tcurrent version:  '"+QCoreApplication::applicationVersion()+"'\n"
+            " credits:\n"
+            "\tMe: kazak1377(Maxim Kozachenko)\n"
+            "Thanks to:\n"
+            "\tQt team\n"
+            "\tmembers of c_plus_plus jabber.ru conference";
+    QMessageBox::information(this, tr("About QVkPlayer"),ab);
 }
 
 
@@ -275,7 +311,6 @@ void MainWindow::setMusicTable()
     setPausedUi();
     ui->musicWidget->setRowCount(0);
     ui->musicWidget->clear();
-    ui->musicWidget->cellClicked(0,0);
     music->clearHistory();
     QStringList header;
     ui->musicWidget->setColumnCount(4);
@@ -289,6 +324,7 @@ void MainWindow::setMusicTable()
     {
         this->setTableLine(tableLine);
     }
+    emit ui->musicWidget->cellClicked(0,0);
 }
 
 MainWindow::~MainWindow()
@@ -298,4 +334,5 @@ MainWindow::~MainWindow()
     delete ui;
     delete trayIcon;
     delete music;
+    delete netCore;
 }

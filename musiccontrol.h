@@ -4,18 +4,19 @@
 #include <QObject>
 #include <QtMultimedia>
 
-class musicControl : public QObject
+class MusicControl : public QObject
 {
     Q_OBJECT
     QMediaPlayer *player;
     QMediaPlaylist *playlist;
     bool shufle;
+    bool repeat;
     int currentIndex;
     int previousIndex;
     QStack<int> history;
     int selectedSong;
 public:
-    explicit musicControl(QObject *parent = 0);
+    explicit MusicControl(QObject *parent = 0);
     void clearHistory();
 signals:
     void setIndexToUi(int,int);
@@ -34,7 +35,7 @@ public slots:
     void setPosition(int position);
     void stateHandler(QMediaPlayer::MediaStatus);
     void setSelectedSong(int,int);
-    //void repeatMode(bool);
+    void repeatMode(bool);
     
 };
 
