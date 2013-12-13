@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QtMultimedia>
 
+
 class MusicControl : public QObject
 {
     Q_OBJECT

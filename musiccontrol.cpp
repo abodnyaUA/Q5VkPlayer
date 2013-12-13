@@ -77,6 +77,7 @@ void MusicControl::repeatMode(bool)
 
 void MusicControl::setPlayList(QList<QUrl> list)
 {
+    qDebug()<<list;
     QUrl var;
     playlist->clear();
     foreach (var, list)

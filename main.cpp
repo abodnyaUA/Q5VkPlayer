@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include <QTextCodec>
+#include <QMetaType>
 
 
 #ifdef QT_NO_DEBUG
@@ -34,10 +35,11 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &/*context*/,
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    qRegisterMetaType<QList<QUrl> >("QList<QUrl>");
     QCoreApplication::setOrganizationName("kazak1377");
     QCoreApplication::setOrganizationDomain("kazak1377.16mb.com");
     QCoreApplication::setApplicationName("QVkPlayer");
-    QCoreApplication::setApplicationVersion("0.5a");
+    QCoreApplication::setApplicationVersion("0.7a");
 #ifdef QT_NO_DEBUG
     qInstallMessageHandler(customMessageHandler);
 #endif

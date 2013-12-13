@@ -16,14 +16,19 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     vkauth.cpp \
     musiccontrol.cpp \
-    networker.cpp
+    networker.cpp \
+    prefwindow.cpp
 
 HEADERS  += mainwindow.h \
     vkauth.h \
     musiccontrol.h \
-    networker.h
+    networker.h \
+    prefwindow.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    prefwindow.ui
+
+QMAKE_LFLAGS += -static-libgcc
 
 RESOURCES += \
     icons.qrc

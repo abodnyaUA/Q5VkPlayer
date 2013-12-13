@@ -1,4 +1,5 @@
 #include "networker.h"
+#include<QMetaType>
 
 NetWorker::~NetWorker()
 {
@@ -36,6 +37,7 @@ void NetWorker::replyFinished(QNetworkReply *reply)
     {
         qDebug()<<"Audio list get";
         QXmlStreamReader xml(reply);
+        //qDebug()<<reply->readAll();
         while(!xml.atEnd() && !xml.hasError())
         {
             /* Read next element.*/
@@ -93,6 +95,7 @@ void NetWorker::replyFinished(QNetworkReply *reply)
     {
         qDebug()<<reply->errorString();
     }
+    qDebug()<<songsList;
     emit audioListGet(songsList);
     emit dataGot();
     songsList.clear();

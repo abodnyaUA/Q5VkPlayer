@@ -14,8 +14,11 @@
 #include <QFile>
 #include "musiccontrol.h"
 #include "networker.h"
+#include "prefwindow.h"
 #include <QSettings>
 #include <QSystemTrayIcon>
+#include <QThread>
+#include <QMetaType>
 
 
 
@@ -33,9 +36,13 @@ class MainWindow : public QMainWindow
     MusicControl *music;
     QSystemTrayIcon *trayIcon;
     NetWorker *netCore;
+    PrefWindow *settingsWindow;
     void closeEvent(QCloseEvent *event);
-    //QThread *netWorkThread;
-    //QThread *mediaThread;
+    bool useHotkeys;
+    bool useMediaHotkeys;
+    bool useCache;
+//    QThread *netWorkThread;
+//    QThread *mediaThread;
 #ifdef WIN32
     bool nativeEvent(const QByteArray &eventType, void *message, long *result);
 #endif
@@ -50,6 +57,7 @@ public slots:
     void positionChanged(qint64 position);
     void durationChanged(qint64 duration);
     void offlineDebugFunction();
+    void setNewSettings(bool use, bool media, bool cache, QString path);
 private slots:
     void currentSearch(QString text);
     void about();
@@ -63,6 +71,7 @@ private:
 signals:
     void loadToken(QString,QString);
     void setPlayingOrder(QList<QUrl>);
+    void setPrefWindowsHotkeysUi(bool use, bool media);
 };
 
 #endif // MAINWINDOW_H

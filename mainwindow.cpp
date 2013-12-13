@@ -15,17 +15,12 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    qDebug()<<winId();
-#ifdef WIN32
-    RegisterHotKey((HWND)winId(),66613, 0, VK_MEDIA_NEXT_TRACK);
-    RegisterHotKey((HWND)winId(),66612, 0, VK_MEDIA_PREV_TRACK);
-    RegisterHotKey((HWND)winId(),66611, 0, VK_MEDIA_PLAY_PAUSE);
-#endif
     qDebug()<<QApplication::applicationVersion();
     music = new MusicControl;
     netCore = new NetWorker;
     settings = new QSettings(this);
-
+    settingsWindow = new PrefWindow(this);
+    settingsWindow->setWindowFlags(Qt::Dialog);
     ui->lineEdit->setPlaceholderText("Search here");
     ui->seekSlider->setRange(0,0);
     ui->repeatButton->hide();
@@ -52,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     trayIcon->show();
     connect(trayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,
             SLOT(trayHandler(QSystemTrayIcon::ActivationReason)));
+
     ///table setting
     QStringList header;
     ui->musicWidget->setColumnCount(4);
@@ -69,6 +65,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     QAction *login = new QAction(tr("Login"),this);
     QAction *About = new QAction(tr("About"),this);
     QAction *refrsh = new QAction(tr("Refresh"),this);
+    QAction *showSettingsWindow = new QAction(tr("Settings"),this);
+    connect(showSettingsWindow, SIGNAL(triggered()),settingsWindow,SLOT(show()));
     connect(refrsh,SIGNAL(triggered()), netCore, SLOT(getAudioList()));
     connect(login, SIGNAL(triggered()), netCore, SLOT(loginSlot()));
     connect(About, SIGNAL(triggered()), this, SLOT(about()));
@@ -76,6 +74,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     QMenu *gearButtonMenu = new QMenu("Options", ui->toolButton);
     gearButtonMenu->addAction(refrsh);
     gearButtonMenu->addAction(login);
+    gearButtonMenu->addAction(showSettingsWindow);
     gearButtonMenu->addSeparator();
     gearButtonMenu->addAction(About);
     gearButtonMenu->addAction(close);
@@ -102,6 +101,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     connect(ui->musicWidget,SIGNAL(cellClicked(int,int)),music,SLOT(setSelectedSong(int,int)));
     connect(ui->repeatButton,SIGNAL(clicked(bool)),music,SLOT(repeatMode(bool)));
     connect(netCore,SIGNAL(dataGot()),this,SLOT(setMusicTable()));
+    connect(this,SIGNAL(setPrefWindowsHotkeysUi(bool,bool)),settingsWindow,SLOT(setUseHotkeysUi(bool,bool)));
+    connect(settingsWindow,SIGNAL(setNewSettings(bool,bool,bool,QString)),
+            this,SLOT(setNewSettings(bool,bool,bool,QString)));
     ///connection area
 
     ///CONFIG LOADING==================================
@@ -119,7 +121,7 @@ bool MainWindow::nativeEvent(const QByteArray &eventType, void *message, long *r
     {
         ui->prevButton->click();
     }
-    else if(msg->wParam == 69)   //69 is wParam of media key play/pause
+    else if((msg->wParam == 69 && useMediaHotkeys)|| msg->wParam == 66611)   //69 is wParam of media key play/pause
     {
         ui->tooglePlayingButton->click();
     }
@@ -137,6 +139,11 @@ void MainWindow::loadSettings()
     QString localUid = settings->value("user_id","none").toString();
     emit loadToken(localToken,localUid);
     netCore->getAudioList();
+    //this->offlineDebugFunction();
+    useHotkeys = settings->value("useHotkeys",false).toBool();
+    useMediaHotkeys = settings->value("useMediaHotkeys",false).toBool();
+    emit setPrefWindowsHotkeysUi(useHotkeys, useMediaHotkeys);
+    setNewSettings(useHotkeys,useMediaHotkeys,false,"");
 }
 
 void MainWindow::saveSettings()
@@ -145,6 +152,8 @@ void MainWindow::saveSettings()
     settings->setValue("user_id",netCore->getUid());
     settings->setValue("volume",ui->volumeSlider->value());
     settings->setValue("geometry",saveGeometry());
+    settings->setValue("useHotkeys",useHotkeys);
+    settings->setValue("useMediaHotkeys",useMediaHotkeys);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -178,6 +187,16 @@ void MainWindow::durationChanged(qint64 duration)
 
 void MainWindow::offlineDebugFunction()
 {
+    setPausedUi();
+    ui->musicWidget->setRowCount(0);
+    ui->musicWidget->clear();
+    music->clearHistory();
+    QStringList header;
+    ui->musicWidget->setColumnCount(4);
+    header <<"Artist"<<"Title"<<"Duration"<<"link";
+    ui->musicWidget->hideColumn(3);
+    ui->musicWidget->setHorizontalHeaderLabels(header);
+    ui->musicWidget->verticalHeader()->setVisible(false);
     QStringList debugTableLine;
     debugTableLine<<"Amy Macdonald"<<"Barrowland Ballroom"<<"03:58"<<"1.mp3";
     this->setTableLine(debugTableLine);
@@ -202,6 +221,43 @@ void MainWindow::offlineDebugFunction()
     plst.append(QUrl("5.mp3"));
     qDebug()<<plst;
     emit setPlayingOrder(plst);
+}
+
+
+void MainWindow::setNewSettings(bool use, bool media, bool cache, QString path)
+{
+    qDebug()<<use<<" "<<media<<" "<<cache<<" "<<path;
+#ifdef WIN32
+    UnregisterHotKey((HWND)winId(),66613);
+    UnregisterHotKey((HWND)winId(),66612);
+    UnregisterHotKey((HWND)winId(),66611);
+#endif
+    useHotkeys = use;
+    useMediaHotkeys = media;
+    useCache = cache;
+    saveSettings();
+    emit setPrefWindowsHotkeysUi(useHotkeys, useMediaHotkeys);
+    if (useHotkeys)
+    {
+        if (useMediaHotkeys)
+        {
+#ifdef WIN32
+            RegisterHotKey((HWND)winId(),66613, 0, VK_MEDIA_NEXT_TRACK);
+            RegisterHotKey((HWND)winId(),66612, 0, VK_MEDIA_PREV_TRACK);
+            RegisterHotKey((HWND)winId(),66611, 0, VK_MEDIA_PLAY_PAUSE);
+            qDebug()<<"Registered media hotkeys";
+#endif
+        }
+        else
+        {
+#ifdef WIN32
+            RegisterHotKey((HWND)winId(),66613, MOD_CONTROL, VK_RIGHT);
+            RegisterHotKey((HWND)winId(),66612, MOD_CONTROL, VK_LEFT);
+            RegisterHotKey((HWND)winId(),66611, MOD_CONTROL, VK_DOWN);
+            qDebug()<<"Registered desktop hotkeys";
+#endif
+        }
+    }
 }
 
 void MainWindow::setSongUi(int current,int /*prev*/)
