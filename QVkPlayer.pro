@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui multimediawidgets
+QT       += core gui multimediawidgets dbus
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += webkitwidgets multimedia multimediawidgets
 
@@ -17,13 +17,19 @@ SOURCES += main.cpp\
     vkauth.cpp \
     musiccontrol.cpp \
     networker.cpp \
-    prefwindow.cpp
+    prefwindow.cpp \
+    dbus/dbusadaptor.cpp \
+    dbus/dbusmethods.cpp \
+    dbus/dbusadaptor1.cpp
 
 HEADERS  += mainwindow.h \
     vkauth.h \
     musiccontrol.h \
     networker.h \
-    prefwindow.h
+    prefwindow.h \
+    dbus/dbusadaptor.h \
+    dbus/dbusmethods.h \
+    dbus/dbusadaptor1.h
 
 FORMS    += mainwindow.ui \
     prefwindow.ui

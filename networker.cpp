@@ -95,7 +95,6 @@ void NetWorker::replyFinished(QNetworkReply *reply)
     {
         qDebug()<<reply->errorString();
     }
-    qDebug()<<songsList;
     emit audioListGet(songsList);
     emit dataGot();
     songsList.clear();

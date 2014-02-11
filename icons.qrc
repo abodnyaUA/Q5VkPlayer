@@ -27,5 +27,6 @@
         <file>icons/dark/media-volume.png</file>
         <file>icons/dark/mute.png</file>
         <file>icons/qvk.png</file>
+        <file>icons/qvk.svg</file>
     </qresource>
 </RCC>

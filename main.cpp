@@ -3,7 +3,7 @@
 #include <QTextCodec>
 #include <QMetaType>
 
-
+#ifdef WIN32
 #ifdef QT_NO_DEBUG
 void customMessageHandler(QtMsgType type, const QMessageLogContext &/*context*/, const QString &msg)
 {
@@ -23,29 +23,36 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &/*context*/,
         txt = QString("Fatal: %1").arg(msg);
         abort();
     }
-
+#ifdef WIN32
     QFile outFile("app.log");
+#elif defined Q_OS_LINUX
+    QFile outFile(QDir::homePath()+".config/kazak1377/app.log");
+#endif
     outFile.open(QIODevice::WriteOnly | QIODevice::Append);
     QTextStream ts(&outFile);
     ts << txt << endl;
 }
 #endif
-
+#endif
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
     qRegisterMetaType<QList<QUrl> >("QList<QUrl>");
     QCoreApplication::setOrganizationName("kazak1377");
     QCoreApplication::setOrganizationDomain("kazak1377.16mb.com");
     QCoreApplication::setApplicationName("QVkPlayer");
-    QCoreApplication::setApplicationVersion("0.7a");
+    QCoreApplication::setApplicationVersion("0.8a");
+#ifdef WIN32
 #ifdef QT_NO_DEBUG
     qInstallMessageHandler(customMessageHandler);
+#endif
 #endif
     qDebug()<<" \n\n\n\n\n\n\n\n\n\n";
     qDebug()<<"==========App_started=========";
     a.addLibraryPath(a.applicationDirPath());
+
     MainWindow w;
     w.setWindowIcon(QIcon(":/icons/qvk.ico"));
     w.show();

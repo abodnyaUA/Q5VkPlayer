@@ -22,11 +22,12 @@ private:
 public slots:
     void setUseHotkeysUi(bool use, bool media);
     void setUseCacheUi(bool use, QString path);
+    void setUseMinTray(bool useTray);
 
 signals:
     void changedUseCacheSettings(bool use, QString path);
     void changedUseHotkeysSettings(bool use, int index);
-    void setNewSettings(bool use, bool media, bool cache, QString path);
+    void setNewSettings(bool use, bool media, bool cache, QString path, bool minTray);
 private slots:
     void sendNewSettings();
 

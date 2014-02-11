@@ -5,10 +5,16 @@
 #include "musiccontrol.h"
 #include <QSettings>
 #include <QSystemTrayIcon>
-
+#include <QtConcurrent/QtConcurrent>
 #ifdef WIN32
 #include <windows.h>
 #include <qt_windows.h>
+#endif
+#ifdef Q_OS_LINUX
+#include "dbus/dbusmethods.h"
+#include "dbus/dbusadaptor.h"
+#include "dbus/dbusadaptor1.h"
+#include <QtDBus/QDBusConnection>
 #endif
 
 
@@ -24,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     ui->lineEdit->setPlaceholderText("Search here");
     ui->seekSlider->setRange(0,0);
     ui->repeatButton->hide();
+    isUnity = false;
 
     ///tray icon setup
     QAction *next = new QAction(tr("Next"),this);
@@ -42,11 +49,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     trayIconMenu->addAction(prev);
     trayIconMenu->addAction(playPause);
     trayIconMenu->addAction(close);
-    trayIcon = new QSystemTrayIcon(QIcon(":/icons/qvk.png"));
+    trayIcon = new QSystemTrayIcon(QIcon(":/icons/qvk.svg"));
     trayIcon->setContextMenu(trayIconMenu);
-    trayIcon->show();
     connect(trayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,
             SLOT(trayHandler(QSystemTrayIcon::ActivationReason)));
+    //trayIcon->setVisible(true);
+    //trayIcon->show();
+
 
     ///table setting
     QStringList header;
@@ -102,9 +111,32 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     connect(ui->repeatButton,SIGNAL(clicked(bool)),music,SLOT(repeatMode(bool)));
     connect(netCore,SIGNAL(dataGot()),this,SLOT(setMusicTable()));
     connect(this,SIGNAL(setPrefWindowsHotkeysUi(bool,bool)),settingsWindow,SLOT(setUseHotkeysUi(bool,bool)));
-    connect(settingsWindow,SIGNAL(setNewSettings(bool,bool,bool,QString)),
-            this,SLOT(setNewSettings(bool,bool,bool,QString)));
+    connect(this,SIGNAL(setMinToTray(bool)),settingsWindow,SLOT(setUseMinTray(bool)));
+    connect(settingsWindow,SIGNAL(setNewSettings(bool,bool,bool,QString,bool)),
+            this,SLOT(setNewSettings(bool,bool,bool,QString,bool)));
     ///connection area
+
+
+
+    ///DBUS setting
+#ifdef Q_OS_LINUX
+    DBusMethods* demo = new DBusMethods();
+    new DBusAdaptor(demo);
+    new DBusAdaptor1(demo);
+
+    QDBusConnection connection = QDBusConnection::sessionBus();
+    bool ret = connection.registerService("org.mpris.MediaPlayer2.qvkplayer.mainwindow");
+    ret = connection.registerObject("/org/mpris/MediaPlayer2", demo);
+    connect(demo,SIGNAL(dbusNext()),ui->nextButton,SIGNAL(clicked()));
+    connect(demo,SIGNAL(dbusPlayPause()),ui->tooglePlayingButton,SIGNAL(clicked()));
+    connect(demo,SIGNAL(dbusPrev()),ui->prevButton,SIGNAL(clicked()));
+    connect(demo,SIGNAL(dbusQuit()),qApp,SLOT(quit()));
+    connect(demo,SIGNAL(dbusRaise()),this,SLOT(show()));
+#endif
+
+    ///DBUS setting
+
+
 
     ///CONFIG LOADING==================================
     this->loadSettings();
@@ -130,20 +162,41 @@ bool MainWindow::nativeEvent(const QByteArray &eventType, void *message, long *r
 }
 #endif
 
+#ifdef Q_OS_LINUX
+void MainWindow::linuxIconShow() {
+#include <stdlib.h>
+    system("python2 tray.py");
+}
+#endif
 
 void MainWindow::loadSettings()
 {
+#ifdef Q_OS_LINUX
+    desktop = getenv("XDG_CURRENT_DESKTOP");
+    isUnity = (desktop.toLower() == "unity");
+    qDebug()<<"CURRENT DESKTOP: " << desktop;
+    if (isUnity)
+    {
+        QtConcurrent::run(this, &MainWindow::linuxIconShow);
+    } else {
+        trayIcon->show();
+    }
+#endif
+#ifdef WIN32
+    trayIcon->show();
+#endif
     restoreGeometry(settings->value("geometry",saveGeometry()).toByteArray());
     ui->volumeSlider->setValue(settings->value("volume",50).toInt());
     QString localToken = settings->value("token","none").toString();
     QString localUid = settings->value("user_id","none").toString();
+    minToTray = settings->value("minToTrayOnClose",false).toBool();
     emit loadToken(localToken,localUid);
     netCore->getAudioList();
     //this->offlineDebugFunction();
     useHotkeys = settings->value("useHotkeys",false).toBool();
     useMediaHotkeys = settings->value("useMediaHotkeys",false).toBool();
     emit setPrefWindowsHotkeysUi(useHotkeys, useMediaHotkeys);
-    setNewSettings(useHotkeys,useMediaHotkeys,false,"");
+    setNewSettings(useHotkeys,useMediaHotkeys,false,"",minToTray);
 }
 
 void MainWindow::saveSettings()
@@ -154,19 +207,32 @@ void MainWindow::saveSettings()
     settings->setValue("geometry",saveGeometry());
     settings->setValue("useHotkeys",useHotkeys);
     settings->setValue("useMediaHotkeys",useMediaHotkeys);
+    settings->setValue("minToTrayOnClose",minToTray);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if (trayIcon->isVisible())
+    if(minToTray)
     {
+#ifdef WIN32
+        if (trayIcon->isVisible())
+        {
+            this->hide();
+            event->ignore();
+        }
+#elif defined Q_OS_LINUX
         this->hide();
         event->ignore();
+#endif
+    }
+    else
+    {
     }
 }
 
 void MainWindow::setPlayingUi()
 {
+
     ui->tooglePlayingButton->setIcon(QIcon(QPixmap(":/icons/dark/gtk-media-pause.png")));
 }
 
@@ -224,19 +290,24 @@ void MainWindow::offlineDebugFunction()
 }
 
 
-void MainWindow::setNewSettings(bool use, bool media, bool cache, QString path)
+void MainWindow::setNewSettings(bool use, bool media, bool cache, QString path, bool minTray)
 {
-    qDebug()<<use<<" "<<media<<" "<<cache<<" "<<path;
+    qDebug()<<use<<" "<<media<<" "<<cache<<" "<<path<<" "<<minTray;
 #ifdef WIN32
     UnregisterHotKey((HWND)winId(),66613);
     UnregisterHotKey((HWND)winId(),66612);
     UnregisterHotKey((HWND)winId(),66611);
 #endif
+#ifdef Q_OS_LINUX
+
+#endif
     useHotkeys = use;
     useMediaHotkeys = media;
     useCache = cache;
+    minToTray = minTray;
     saveSettings();
     emit setPrefWindowsHotkeysUi(useHotkeys, useMediaHotkeys);
+    emit setMinToTray(minToTray);
     if (useHotkeys)
     {
         if (useMediaHotkeys)
@@ -247,6 +318,9 @@ void MainWindow::setNewSettings(bool use, bool media, bool cache, QString path)
             RegisterHotKey((HWND)winId(),66611, 0, VK_MEDIA_PLAY_PAUSE);
             qDebug()<<"Registered media hotkeys";
 #endif
+#ifdef Q_OS_LINUX
+
+#endif
         }
         else
         {
@@ -255,6 +329,9 @@ void MainWindow::setNewSettings(bool use, bool media, bool cache, QString path)
             RegisterHotKey((HWND)winId(),66612, MOD_CONTROL, VK_LEFT);
             RegisterHotKey((HWND)winId(),66611, MOD_CONTROL, VK_DOWN);
             qDebug()<<"Registered desktop hotkeys";
+#endif
+#ifdef Q_OS_LINUX
+
 #endif
         }
     }
@@ -387,6 +464,9 @@ MainWindow::~MainWindow()
 {
     trayIcon->hide();
     saveSettings();
+#ifdef Q_OS_LINUX
+    system("dbus-send --print-reply --dest=org.mpris.MediaPlayer2.qvkplayer.icon /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Quit");
+#endif
     delete ui;
     delete trayIcon;
     delete music;

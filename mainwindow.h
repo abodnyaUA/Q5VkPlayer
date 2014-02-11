@@ -19,7 +19,7 @@
 #include <QSystemTrayIcon>
 #include <QThread>
 #include <QMetaType>
-
+#include <QtDBus/QDBusConnection>
 
 
 namespace Ui {
@@ -41,6 +41,9 @@ class MainWindow : public QMainWindow
     bool useHotkeys;
     bool useMediaHotkeys;
     bool useCache;
+    bool minToTray;
+    QString desktop;
+    bool isUnity;
 //    QThread *netWorkThread;
 //    QThread *mediaThread;
 #ifdef WIN32
@@ -57,12 +60,14 @@ public slots:
     void positionChanged(qint64 position);
     void durationChanged(qint64 duration);
     void offlineDebugFunction();
-    void setNewSettings(bool use, bool media, bool cache, QString path);
+    void setNewSettings(bool use, bool media, bool cache, QString path, bool minTray);
 private slots:
     void currentSearch(QString text);
     void about();
     void trayHandler(QSystemTrayIcon::ActivationReason reason);
-    
+#ifdef Q_OS_LINUX
+    void linuxIconShow();
+#endif
 private:
     Ui::MainWindow *ui;
     QSettings *settings;
@@ -72,6 +77,7 @@ signals:
     void loadToken(QString,QString);
     void setPlayingOrder(QList<QUrl>);
     void setPrefWindowsHotkeysUi(bool use, bool media);
+    void setMinToTray(bool min);
 };
 
 #endif // MAINWINDOW_H
