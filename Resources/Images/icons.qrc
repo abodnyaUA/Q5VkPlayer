@@ -1,0 +1,35 @@
+<RCC>
+    <qresource prefix="/Resources/Images">
+        <file>Music-icon.png</file>
+        <file>appicon/qvk.ico</file>
+        <file>appicon/qvk.png</file>
+        <file>appicon/qvk.icns</file>
+        <file>appicon/qvk.svg</file>
+        <file>dark/gear.png</file>
+        <file>dark/gtk_media_forward_ltr.png</file>
+        <file>dark/gtk-media-forward-rtl.png</file>
+        <file>dark/gtk-media-next-ltr.png</file>
+        <file>dark/gtk-media-next-rtl.png</file>
+        <file>dark/gtk-media-pause.png</file>
+        <file>dark/gtk-media-play-ltr.png</file>
+        <file>dark/gtk-media-stop.png</file>
+        <file>dark/iSync-Icon.png</file>
+        <file>dark/media-volume.png</file>
+        <file>dark/mute.png</file>
+        <file>dark/repeat.png</file>
+        <file>dark/shuffle.png</file>
+        <file>light/document-properties.svg</file>
+        <file>light/gear.png</file>
+        <file>light/gtk_media_forward_ltr (1).png</file>
+        <file>light/gtk-media-forward-rtl.png</file>
+        <file>light/gtk-media-next-ltr .png</file>
+        <file>light/gtk-media-next-ltr.png</file>
+        <file>light/gtk-media-next-rtl.png</file>
+        <file>light/gtk-media-pause.png</file>
+        <file>light/gtk-media-play-ltr.png</file>
+        <file>light/gtk-media-stop.png</file>
+        <file>light/iSync-Icon.png</file>
+        <file>light/repeat.png</file>
+        <file>light/shuffle.png</file>
+    </qresource>
+</RCC>
