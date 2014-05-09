@@ -49,8 +49,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     ///table setting
     QStringList header;
     ui->musicWidget->setColumnCount(4);
-    header <<"Artist"<<"Title"<<"Duration"<<"link";   //in case of unsuccesseful update....
-    ui->musicWidget->hideColumn(3);
+    header <<"Artist"<<"Title"<<"Duration"<<"Download";   //in case of unsuccesseful update....
     ui->musicWidget->setHorizontalHeaderLabels(header);
     ui->musicWidget->verticalHeader()->setVisible(false);
     ui->musicWidget->setShowGrid(false);
@@ -91,7 +90,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     connect(ui->seekSlider,SIGNAL(sliderMoved(int)),music,SLOT(setPosition(int)));
     connect(ui->searchField,SIGNAL(textChanged(QString)),this,SLOT(currentSearch(QString)));
     connect(ui->searchField,SIGNAL(returnPressed()),this,SLOT(updateSearch()));
-    connect(ui->musicWidget,SIGNAL(cellClicked(int,int)),music,SLOT(setSelectedSong(int,int)));
+    connect(ui->musicWidget,SIGNAL(cellClicked(int,int)),this,SLOT(didClickOnCell(int,int)));
     connect(ui->repeatButton,SIGNAL(clicked(bool)),music,SLOT(repeatMode(bool)));
     connect(music,SIGNAL(setIndexToUi(int,int)),this,SLOT(setSongUi(int,int)));
     connect(music,SIGNAL(setPlayingUi()),this,SLOT(setPlayingUi()));
@@ -102,6 +101,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     connect(this,SIGNAL(setPrefWindowsHotkeysUi(bool,bool)),settingsWindow,SLOT(setUseHotkeysUi(bool,bool)));
     connect(this,SIGNAL(setMinToTray(bool)),settingsWindow,SLOT(setUseMinTray(bool)));
     connect(settingsWindow,SIGNAL(setNewSettings(bool,bool,bool,bool)),this,SLOT(setNewSettings(bool,bool,bool,bool)));
+    connect(NetWorker::sharedNetworker(),SIGNAL(didDownloadSong(Song*)),this,SLOT(updateCellStateOfSong(Song*)));
     ///connection area
 
     loadSettings();
@@ -241,6 +241,27 @@ QString MainWindow::durationToHuman(int seconds)
     return QString("%1:%2").arg(seconds / 60).arg(seconds % 60, 2, 10, QChar('0'));;
 }
 
+void MainWindow::didClickOnCell(int row, int column)
+{
+    qDebug() << "didClick On cell" << row << column;
+    if (column == 3)
+    {
+        Song *song = SongProvider::sharedProvider()->songWithIndex(row);
+        if (!song->local)
+        {
+            ui->musicWidget->item(song->number,3)->setText("Downloading...");
+            NetWorker::sharedNetworker()->downloadSong(song);
+        }
+    }
+    music->selectSongWithIndex(row);
+}
+
+void MainWindow::updateCellStateOfSong(Song *song)
+{
+    qDebug() << "Update cell with index " << song->number;
+    ui->musicWidget->item(song->number,3)->setText("Local copy");
+}
+
 void MainWindow::addSongInTable(Song *song)
 {
     int lastRow = ui->musicWidget->rowCount();
@@ -256,7 +277,7 @@ void MainWindow::addSongInTable(Song *song)
     ui->musicWidget->setItem(lastRow, 2, new QTableWidgetItem(durationToHuman(song->duration)));
 
     // URL
-    ui->musicWidget->setItem(lastRow, 3, new QTableWidgetItem(song->url.toString()));
+    ui->musicWidget->setItem(lastRow, 3, new QTableWidgetItem("Download"));
 }
 
 void MainWindow::updateMusicTable()
@@ -267,8 +288,7 @@ void MainWindow::updateMusicTable()
     music->clearHistory();
     QStringList header;
     ui->musicWidget->setColumnCount(4);
-    header <<"Artist"<<"Title"<<"Duration"<<"link";
-    ui->musicWidget->hideColumn(3);
+    header <<"Artist"<<"Title"<<"Duration"<<"Download";
     ui->musicWidget->setHorizontalHeaderLabels(header);
     ui->musicWidget->verticalHeader()->setVisible(false);
 

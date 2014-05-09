@@ -23,6 +23,7 @@ class NetWorker : public QObject
 {
     Q_OBJECT
     static NetWorker *__sharedNetworker;
+    QNetworkAccessManager *manager;
     QString token;
     QString userId;
     VkAuth *loginWindow;
@@ -31,18 +32,23 @@ public:
     static NetWorker *sharedNetworker();
     QString getToken();
     QString getUid();
+    void downloadSong(Song *);
 
 signals:
     void didRecieveSongs(QList<Song *>);
+    void didDownloadSong(Song *);
 
 public slots:
-    void replyFinished(QNetworkReply *reply);
     void setToken(QString, QString);
     void loginSlot();
     void getAudioList();
 
+private slots:
+    void replyFinished(QNetworkReply *reply);
+    void songDidDownloaded(QNetworkReply *reply);
+
 private:
-    NetWorker() {}
+    NetWorker();
     NetWorker(const NetWorker&);
     NetWorker& operator=(const NetWorker&);
 };

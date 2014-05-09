@@ -40,7 +40,7 @@ public slots:
     void volumeSliderSlot(int);
     void setPosition(int position);
     void stateHandler(QMediaPlayer::MediaStatus);
-    void setSelectedSong(int,int);
+    void selectSongWithIndex(int index);
     void repeatMode(bool);
     
 };

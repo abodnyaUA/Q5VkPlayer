@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_MusicControl_t {
-    QByteArrayData data[22];
-    char stringdata[285];
+    QByteArrayData data[23];
+    char stringdata[295];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -49,8 +49,9 @@ QT_MOC_LITERAL(16, 197, 11),
 QT_MOC_LITERAL(17, 209, 8),
 QT_MOC_LITERAL(18, 218, 12),
 QT_MOC_LITERAL(19, 231, 25),
-QT_MOC_LITERAL(20, 257, 15),
-QT_MOC_LITERAL(21, 273, 10)
+QT_MOC_LITERAL(20, 257, 19),
+QT_MOC_LITERAL(21, 277, 5),
+QT_MOC_LITERAL(22, 283, 10)
     },
     "MusicControl\0setIndexToUi\0\0setPlayingUi\0"
     "setPausedUi\0newRange\0newPosition\0"
@@ -58,8 +59,8 @@ QT_MOC_LITERAL(21, 273, 10)
     "songDidChanged\0QMediaContent\0playNextSong\0"
     "playPrevSong\0changeState\0volumeSliderSlot\0"
     "setPosition\0position\0stateHandler\0"
-    "QMediaPlayer::MediaStatus\0setSelectedSong\0"
-    "repeatMode\0"
+    "QMediaPlayer::MediaStatus\0selectSongWithIndex\0"
+    "index\0repeatMode\0"
 };
 #undef QT_MOC_LITERAL
 
@@ -94,8 +95,8 @@ static const uint qt_meta_data_MusicControl[] = {
       15,    1,  127,    2, 0x0a,
       16,    1,  130,    2, 0x0a,
       18,    1,  133,    2, 0x0a,
-      20,    2,  136,    2, 0x0a,
-      21,    1,  141,    2, 0x0a,
+      20,    1,  136,    2, 0x0a,
+      22,    1,  139,    2, 0x0a,
 
  // signals: parameters
     QMetaType::Void, QMetaType::Int, QMetaType::Int,    2,    2,
@@ -115,7 +116,7 @@ static const uint qt_meta_data_MusicControl[] = {
     QMetaType::Void, QMetaType::Int,    2,
     QMetaType::Void, QMetaType::Int,   17,
     QMetaType::Void, 0x80000000 | 19,    2,
-    QMetaType::Void, QMetaType::Int, QMetaType::Int,    2,    2,
+    QMetaType::Void, QMetaType::Int,   21,
     QMetaType::Void, QMetaType::Bool,    2,
 
        0        // eod
@@ -141,7 +142,7 @@ void MusicControl::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
         case 12: _t->volumeSliderSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 13: _t->setPosition((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 14: _t->stateHandler((*reinterpret_cast< QMediaPlayer::MediaStatus(*)>(_a[1]))); break;
-        case 15: _t->setSelectedSong((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        case 15: _t->selectSongWithIndex((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 16: _t->repeatMode((*reinterpret_cast< bool(*)>(_a[1]))); break;
         default: ;
         }

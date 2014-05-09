@@ -134,7 +134,10 @@ public:
         verticalLayout->addLayout(horizontalLayout);
 
         musicWidget = new QTableWidget(centralWidget);
+        if (musicWidget->columnCount() < 4)
+            musicWidget->setColumnCount(4);
         musicWidget->setObjectName(QStringLiteral("musicWidget"));
+        musicWidget->setColumnCount(4);
 
         verticalLayout->addWidget(musicWidget);
 

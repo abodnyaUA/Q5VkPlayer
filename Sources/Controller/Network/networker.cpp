@@ -1,5 +1,13 @@
 #include "networker.h"
 #include <QMetaType>
+#include <QDir>
+#include "Sources/Model/songprovider.h"
+
+#ifdef WIN32
+    #define SLASH "\\"
+#else
+    #define SLASH "/"
+#endif
 
 NetWorker *NetWorker::__sharedNetworker = NULL;
 
@@ -10,6 +18,11 @@ NetWorker *NetWorker::sharedNetworker()
         NetWorker::__sharedNetworker = new NetWorker();
     }
     return NetWorker::__sharedNetworker;
+}
+
+NetWorker::NetWorker()
+{
+    this->manager = new QNetworkAccessManager();
 }
 
 QString NetWorker::getToken()
@@ -24,6 +37,7 @@ QString NetWorker::getUid()
 
 void NetWorker::replyFinished(QNetworkReply *reply)
 {
+    disconnect(manager,SIGNAL(finished(QNetworkReply*)),this,SLOT(replyFinished(QNetworkReply*)));
     QList<Song *> songsList;
     Song *song = NULL;
     uint number = 0;
@@ -76,7 +90,7 @@ void NetWorker::replyFinished(QNetworkReply *reply)
 
                     else if (xml.name() == "url")
                     {
-                        song->url = QUrl(xml.readElementText());
+                        song->url = QUrl(xml.readElementText().split("?")[0]);
                         song->number = number++;
                         songsList.append(song);
                         song = NULL;
@@ -114,8 +128,8 @@ void NetWorker::getAudioList()
     QUrlQuery tmpUrl;
     tmpUrl.addQueryItem("uid", userId);
     tmpUrl.addQueryItem("access_token", token);
-    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    connect(manager, SIGNAL(finished(QNetworkReply*)),SLOT(replyFinished(QNetworkReply*)));
+    QNetworkAccessManager *manager = this->manager;
+    connect(manager, SIGNAL(finished(QNetworkReply*)),this,SLOT(replyFinished(QNetworkReply*)));
     rAudioUrl.setQuery(tmpUrl);
     //qDebug()<<rAudioUrl;
     manager->get(QNetworkRequest(rAudioUrl));
@@ -129,5 +143,41 @@ void NetWorker::setToken(QString value,QString value2)
     if (token == "none" || token == "")
     {
         this->loginSlot();
+    }
+}
+
+#pragma mark - Downloading
+
+void NetWorker::downloadSong(Song *song)
+{
+    QUrl url(song->url);
+    qDebug() << "start downloading song with url "<< url;
+
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant(song->number));
+
+    QNetworkAccessManager *manager = this->manager;
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(songDidDownloaded(QNetworkReply*)));
+    manager->get(request);
+}
+
+void NetWorker::songDidDownloaded(QNetworkReply *reply)
+{
+    QString musicDirectory = QDir::homePath() + SLASH + "Music" + SLASH;
+    int songIndex = reply->request().header(QNetworkRequest::ContentDispositionHeader).toInt();
+    Song *song = SongProvider::sharedProvider()->songWithIndex(songIndex);
+    song->local = true;
+    QString fileName = song->artist + " - " + song->title;
+    QString filePath = musicDirectory + fileName + ".mp3";
+    qDebug() << "FINISH DOWNLOADING FILE " << filePath;
+    QFile file(filePath);
+    if (file.open(QIODevice::WriteOnly))
+    {
+        QByteArray data = reply->readAll();
+        qDebug() << "write data in file with size " << data.size();
+        file.write(data);
+        file.flush();
+        file.close();
+        emit didDownloadSong(song);
     }
 }

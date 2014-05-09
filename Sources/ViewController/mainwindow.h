@@ -56,8 +56,10 @@ public slots:
 private slots:
     void currentSearch(QString text);
     void updateSearch();
+    void didClickOnCell(int, int);
     void about();
     void trayHandler(QSystemTrayIcon::ActivationReason reason);
+    void updateCellStateOfSong(Song *song);
 #ifdef Q_OS_LINUX
     void linuxIconShow();
 #endif

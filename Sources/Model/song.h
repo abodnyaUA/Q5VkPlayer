@@ -14,9 +14,7 @@ public:
     QString title;
     uint duration;
     QUrl url;
-signals:
-
-public slots:
+    bool local;
 
 };
 

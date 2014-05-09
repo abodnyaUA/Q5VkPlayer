@@ -73,7 +73,7 @@ void MusicControl::songDidChanged(QMediaContent)
     }
 }
 
-void MusicControl::setSelectedSong(int index, int)
+void MusicControl::selectSongWithIndex(int index)
 {
     qDebug()<<"selected song index: "<<index;
     selectedSong = index;

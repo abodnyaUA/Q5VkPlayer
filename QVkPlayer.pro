@@ -37,7 +37,6 @@ HEADERS += \
     Sources/ViewController/mainwindow.h \
     Sources/Controller/Network/vkauth.h \
     Sources/Controller/musiccontrol.h \
-    Sources/Controller/Network/networker.h \
     Sources/ViewController/prefwindow.h \
     Sources/Model/song.h \
     Sources/Model/songprovider.h \
@@ -47,7 +46,8 @@ HEADERS += \
     Sources/Controller/notificationssender.h \
     ThirdParty/QtSingleApplication/qtsingleapplication.h \
     ThirdParty/QtSingleApplication/qtlockedfile.h \
-    ThirdParty/QtSingleApplication/qtlocalpeer.h
+    ThirdParty/QtSingleApplication/qtlocalpeer.h \
+    Sources/Controller/Network/networker.h
 
 FORMS += \
     Resources/UI/mainwindow.ui \
