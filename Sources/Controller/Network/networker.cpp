@@ -157,6 +157,7 @@ void NetWorker::downloadSong(Song *song)
 
 void NetWorker::songDidDownloaded(QNetworkReply *reply)
 {
+    disconnect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(songDidDownloaded(QNetworkReply*)));
     QString musicDirectory = SongProvider::sharedProvider()->musicFolderPath();
     int songIndex = reply->request().header(QNetworkRequest::ContentDispositionHeader).toInt();
     Song *song = SongProvider::sharedProvider()->songWithIndex(songIndex);

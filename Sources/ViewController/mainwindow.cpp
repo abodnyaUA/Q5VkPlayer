@@ -10,6 +10,9 @@
 #include <QSettings>
 #include <QSystemTrayIcon>
 #include <QtConcurrent/QtConcurrent>
+#ifdef Q_OS_OSX
+#include <QStyleFactory>
+#endif
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWindow)
 {
@@ -57,6 +60,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     ui->musicWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->musicWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->musicWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+
+#ifdef Q_OS_OSX
+    ui->searchField->setAttribute(Qt::WA_MacBrushedMetal);
+#endif
 
     ////////////////////////////////////////////////Creating actions
     QAction *login = new QAction(tr("Login"),this);
@@ -155,6 +162,15 @@ void MainWindow::setPausedUi()
 
 void MainWindow::positionChanged(qint64 position)
 {
+    Song *song = SongProvider::sharedProvider()->songWithIndex(music->currentSongIndex());
+    int passed = position / 1000;
+#ifdef Q_OS_OSX
+    int remained = passed - song->duration;
+#else
+    int remained = song->duration;
+#endif
+    ui->progressPassed->setText(durationToHuman(passed));
+    ui->progressRemained->setText(durationToHuman(remained));
     ui->seekSlider->setValue(position);
 }
 
@@ -242,7 +258,7 @@ void MainWindow::updateSearch()
 
 QString MainWindow::durationToHuman(int seconds)
 {
-    return QString("%1:%2").arg(seconds / 60).arg(seconds % 60, 2, 10, QChar('0'));;
+    return QString("%1:%2").arg(seconds / 60).arg((int)fabs(seconds % 60), 2, 10, QChar('0'));;
 }
 
 void MainWindow::didClickOnCell(int row, int column)

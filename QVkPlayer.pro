@@ -101,9 +101,8 @@ macx {
     QMAKE_INFO_PLIST = Resources/Plist/QVkPlayer-Info.plist
     OTHER_FILES += Resources/Plist/QVkPlayer-Info.plist
     QMAKE_CXXFLAGS = -mmacosx-version-min=10.7 -std=gnu0x -stdlib=libc++
-    CONFIG+=c++11
+    CONFIG += c++11
 
     OBJECTIVE_SOURCES += \
     Sources/Controller/notificationssender.mm
-#    Sources/Model/songprovider_mac.mm
 }
