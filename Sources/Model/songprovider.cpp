@@ -1,4 +1,5 @@
 #include "songprovider.h"
+#include <assert.h>
 #include "Sources/Controller/Network/networker.h"
 
 SongProvider *SongProvider::__sharedProvider = NULL;
@@ -25,7 +26,7 @@ void SongProvider::updateSongList(QList<Song *> songs)
 
 Song *SongProvider::songWithIndex(quint16 index)
 {
-//    assert(index < this->songs.count());
+    assert(index < this->songs.count());
     return this->songs.at(index);
 }
 

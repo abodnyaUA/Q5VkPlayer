@@ -1,6 +1,8 @@
 #include "application.h"
+#include <QFileInfo>
 
-Application::Application(int &argc, char **argv, int flags) : QApplication(argc, argv,flags)
+Application::Application(int &argc, char **argv, int) :
+    SharedTools::QtSingleApplication(QFileInfo(argv[0]).baseName(),argc, argv)
 {
     this->settings = new SettingsController();
     this->hotkeyHandler = new HotkeyHandler();

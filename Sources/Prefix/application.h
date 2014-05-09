@@ -4,10 +4,11 @@
 #include <QApplication>
 #include "Sources/Controller/Settings/settingscontroller.h"
 #include "Sources/Controller/hotkeyhandler.h"
+#include "ThirdParty/QtSingleApplication/qtsingleapplication.h"
 
 #define qvkApp (static_cast<Application *>(QCoreApplication::instance()))
 
-class Application : public QApplication
+class Application : public SharedTools::QtSingleApplication
 {
     Q_OBJECT
 public:

@@ -28,7 +28,10 @@ SOURCES += \
     Sources/Model/songprovider.cpp \
     Sources/Controller/Settings/settingscontroller.cpp \
     Sources/Prefix/application.cpp \
-    Sources/Controller/hotkeyhandler.cpp
+    Sources/Controller/hotkeyhandler.cpp \
+    ThirdParty/QtSingleApplication/qtsingleapplication.cpp \
+    ThirdParty/QtSingleApplication/qtlockedfile.cpp \
+    ThirdParty/QtSingleApplication/qtlocalpeer.cpp
 
 HEADERS += \
     Sources/ViewController/mainwindow.h \
@@ -41,7 +44,10 @@ HEADERS += \
     Sources/Controller/Settings/settingscontroller.h \
     Sources/Prefix/application.h \
     Sources/Controller/hotkeyhandler.h \
-    Sources/Controller/notificationssender.h
+    Sources/Controller/notificationssender.h \
+    ThirdParty/QtSingleApplication/qtsingleapplication.h \
+    ThirdParty/QtSingleApplication/qtlockedfile.h \
+    ThirdParty/QtSingleApplication/qtlocalpeer.h
 
 FORMS += \
     Resources/UI/mainwindow.ui \
@@ -61,7 +67,14 @@ win32 {
     RC_FILE = Resources/Images/appicon/winicon.rc
 
     SOURCES += \
-    Sources/Controller/notificationssender.cpp
+    Sources/Controller/notificationssender.cpp \
+    ThirdParty/QtSingleApplication/qtlockedfile_win.cpp
+}
+
+# UNIX
+unix {
+    SOURCES += \
+    ThirdParty/QtSingleApplication/qtlockedfile_unix.cpp
 }
 
 # LINUX
@@ -85,7 +98,6 @@ unix : !macx {
 macx {
     LIBS += -framework Foundation
     ICON = Resources/Images/appicon/qvk.icns
-    RC_FILE = Resources/Images/appicon/qvk.icns
     QMAKE_INFO_PLIST = Resources/Plist/QVkPlayer-Info.plist
     OTHER_FILES += Resources/Plist/QVkPlayer-Info.plist
     QMAKE_CXXFLAGS = -mmacosx-version-min=10.7 -std=gnu0x -stdlib=libc++
