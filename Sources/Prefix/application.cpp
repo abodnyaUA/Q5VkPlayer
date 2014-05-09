@@ -15,7 +15,9 @@ QString Application::aboutText()
             "\tcurrent version:  '"+this->applicationVersion()+"'\n"
             " credits:\n"
             "\tMe: kazak1377(Maxim Kozachenko)\n"
+            "\tAbodnya: abodnya(Aleksey Bodnya)\n"
             "Thanks to:\n"
             "\tQt team\n"
             "\tmembers of c_plus_plus jabber.ru conference";
 }
+

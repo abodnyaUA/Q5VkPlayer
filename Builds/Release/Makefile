@@ -569,34 +569,34 @@ compiler_rcc_clean:
 	-$(DEL_FILE) qrc_icons.cpp
 qrc_icons.cpp: ../../Resources/Images/icons.qrc \
 		../../Resources/Images/Music-icon.png \
-		../../Resources/Images/appicon/qvk.ico \
-		../../Resources/Images/appicon/qvk.png \
+		../../Resources/Images/dark/gtk-media-pause.png \
+		../../Resources/Images/dark/iSync-Icon.png \
+		../../Resources/Images/dark/gtk-media-forward-rtl.png \
+		../../Resources/Images/dark/gtk-media-next-ltr.png \
+		../../Resources/Images/dark/gear.png \
+		../../Resources/Images/dark/gtk_media_forward_ltr.png \
+		../../Resources/Images/dark/gtk-media-stop.png \
+		../../Resources/Images/dark/shuffle.png \
+		../../Resources/Images/dark/media-volume.png \
+		../../Resources/Images/dark/mute.png \
+		../../Resources/Images/dark/gtk-media-play-ltr.png \
+		../../Resources/Images/dark/repeat.png \
+		../../Resources/Images/dark/gtk-media-next-rtl.png \
 		../../Resources/Images/appicon/qvk.icns \
 		../../Resources/Images/appicon/qvk.svg \
-		../../Resources/Images/dark/gtk-media-forward-rtl.png \
-		../../Resources/Images/dark/iSync-Icon.png \
-		../../Resources/Images/dark/gtk-media-next-ltr.png \
-		../../Resources/Images/dark/mute.png \
-		../../Resources/Images/dark/repeat.png \
-		../../Resources/Images/dark/shuffle.png \
-		../../Resources/Images/dark/gtk_media_forward_ltr.png \
-		../../Resources/Images/dark/media-volume.png \
-		../../Resources/Images/dark/gtk-media-pause.png \
-		../../Resources/Images/dark/gtk-media-play-ltr.png \
-		../../Resources/Images/dark/gtk-media-next-rtl.png \
-		../../Resources/Images/dark/gear.png \
-		../../Resources/Images/dark/gtk-media-stop.png \
-		../../Resources/Images/light/gtk-media-forward-rtl.png \
-		../../Resources/Images/light/iSync-Icon.png \
-		../../Resources/Images/light/gtk-media-next-ltr.png \
-		../../Resources/Images/light/repeat.png \
-		../../Resources/Images/light/shuffle.png \
-		../../Resources/Images/light/gtk-media-pause.png \
-		../../Resources/Images/light/gtk-media-play-ltr.png \
-		../../Resources/Images/light/gtk-media-next-rtl.png \
+		../../Resources/Images/appicon/qvk.ico \
+		../../Resources/Images/appicon/qvk.png \
 		../../Resources/Images/light/document-properties.svg \
+		../../Resources/Images/light/gtk-media-pause.png \
+		../../Resources/Images/light/iSync-Icon.png \
+		../../Resources/Images/light/gtk-media-forward-rtl.png \
+		../../Resources/Images/light/gtk-media-next-ltr.png \
 		../../Resources/Images/light/gear.png \
-		../../Resources/Images/light/gtk-media-stop.png
+		../../Resources/Images/light/gtk-media-stop.png \
+		../../Resources/Images/light/shuffle.png \
+		../../Resources/Images/light/gtk-media-play-ltr.png \
+		../../Resources/Images/light/repeat.png \
+		../../Resources/Images/light/gtk-media-next-rtl.png
 	/Users/alekseybodnya/Applications/Qt5.2.1/5.2.1/clang_64/bin/rcc -name icons ../../Resources/Images/icons.qrc -o qrc_icons.cpp
 
 compiler_moc_header_make_all: moc_mainwindow.cpp moc_vkauth.cpp moc_musiccontrol.cpp moc_prefwindow.cpp moc_song.cpp moc_songprovider.cpp moc_settingscontroller.cpp moc_application.cpp moc_hotkeyhandler.cpp moc_qtsingleapplication.cpp moc_qtlocalpeer.cpp moc_networker.cpp
@@ -1427,7 +1427,10 @@ networker.o: ../../Sources/Controller/Network/networker.cpp ../../Sources/Contro
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QMetaType \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qmetatype.h \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QDir \
-		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qdir.h
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qdir.h \
+		../../Sources/Model/songprovider.h \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QList \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qlist.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o networker.o ../../Sources/Controller/Network/networker.cpp
 
 prefwindow.o: ../../Sources/ViewController/prefwindow.cpp ../../Sources/ViewController/prefwindow.h \
@@ -1453,6 +1456,8 @@ songprovider.o: ../../Sources/Model/songprovider.cpp ../../Sources/Model/songpro
 		../../Sources/Model/song.h \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QUrl \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qurl.h \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QDir \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qdir.h \
 		../../Sources/Controller/Network/networker.h \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QMainWindow \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qmainwindow.h \

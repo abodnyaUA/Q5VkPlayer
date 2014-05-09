@@ -3,12 +3,6 @@
 #include <QDir>
 #include "Sources/Model/songprovider.h"
 
-#ifdef WIN32
-    #define SLASH "\\"
-#else
-    #define SLASH "/"
-#endif
-
 NetWorker *NetWorker::__sharedNetworker = NULL;
 
 NetWorker *NetWorker::sharedNetworker()
@@ -73,13 +67,13 @@ void NetWorker::replyFinished(QNetworkReply *reply)
                     /* If it's named person, we'll dig the information from there.*/
                     if (xml.name() == "artist")
                     {
-                        song->artist = xml.readElementText();
+                        song->artist = xml.readElementText().replace("&amp;","&");
                         song->artist[0] = song->artist[0].toUpper();
                     }
 
                     else if (xml.name() == "title")
                     {
-                        song->title = xml.readElementText();
+                        song->title = xml.readElementText().replace("&amp;","&");
                         song->title[0] = song->title[0].toUpper();
                     }
 
@@ -163,18 +157,17 @@ void NetWorker::downloadSong(Song *song)
 
 void NetWorker::songDidDownloaded(QNetworkReply *reply)
 {
-    QString musicDirectory = QDir::homePath() + SLASH + "Music" + SLASH;
+    QString musicDirectory = SongProvider::sharedProvider()->musicFolderPath();
     int songIndex = reply->request().header(QNetworkRequest::ContentDispositionHeader).toInt();
     Song *song = SongProvider::sharedProvider()->songWithIndex(songIndex);
     song->local = true;
-    QString fileName = song->artist + " - " + song->title;
+    QString fileName = song->fullName();
     QString filePath = musicDirectory + fileName + ".mp3";
     qDebug() << "FINISH DOWNLOADING FILE " << filePath;
     QFile file(filePath);
     if (file.open(QIODevice::WriteOnly))
     {
         QByteArray data = reply->readAll();
-        qDebug() << "write data in file with size " << data.size();
         file.write(data);
         file.flush();
         file.close();

@@ -177,7 +177,7 @@ void MainWindow::setSongUi(int current,int prev)
     }
 
     // Change title
-    this->setWindowTitle(song->artist + " - " + song->title);
+    this->setWindowTitle(song->fullName());
 
     // Select
     QFont boldFont;
@@ -206,7 +206,7 @@ void MainWindow::currentSearch(QString text)
     QList<Song *> foundList = SongProvider::sharedProvider()->songsWithTitleContains(text);
     if (!foundList.isEmpty())
     {
-        qDebug()<<"Found song: " << foundList[0]->number+1 << foundList[0]->artist + " - " + foundList[0]->title;
+        qDebug()<<"Found song: " << foundList[0]->number+1 << foundList[0]->fullName();
         ui->musicWidget->selectRow(foundList[0]->number);
     }
     else
@@ -231,7 +231,7 @@ void MainWindow::updateSearch()
         {
             newSongIndex = 0;
         }
-        qDebug()<<"Found song: " << foundList[newSongIndex]->number+1 << foundList[newSongIndex]->artist + " - " + foundList[newSongIndex]->title;
+        qDebug()<<"Found song: " << foundList[newSongIndex]->number+1 << foundList[newSongIndex]->fullName();
         ui->musicWidget->selectRow(foundList[newSongIndex]->number);
     }
 }
@@ -277,7 +277,7 @@ void MainWindow::addSongInTable(Song *song)
     ui->musicWidget->setItem(lastRow, 2, new QTableWidgetItem(durationToHuman(song->duration)));
 
     // URL
-    ui->musicWidget->setItem(lastRow, 3, new QTableWidgetItem("Download"));
+    ui->musicWidget->setItem(lastRow, 3, new QTableWidgetItem(song->local ? "Local copy" : "Download"));
 }
 
 void MainWindow::updateMusicTable()

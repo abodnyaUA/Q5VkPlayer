@@ -16,6 +16,7 @@ public:
     QUrl url;
     bool local;
 
+    QString fullName();
 };
 
 #endif // SONG_H

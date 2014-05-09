@@ -105,4 +105,5 @@ macx {
 
     OBJECTIVE_SOURCES += \
     Sources/Controller/notificationssender.mm
+#    Sources/Model/songprovider_mac.mm
 }
