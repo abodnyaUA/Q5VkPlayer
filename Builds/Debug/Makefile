@@ -564,34 +564,34 @@ compiler_rcc_clean:
 	-$(DEL_FILE) qrc_icons.cpp
 qrc_icons.cpp: ../../Resources/Images/icons.qrc \
 		../../Resources/Images/Music-icon.png \
-		../../Resources/Images/light/gtk-media-next-ltr.png \
-		../../Resources/Images/light/repeat.png \
-		../../Resources/Images/light/gear.png \
-		../../Resources/Images/light/gtk-media-stop.png \
-		../../Resources/Images/light/gtk-media-play-ltr.png \
-		../../Resources/Images/light/gtk-media-next-rtl.png \
-		../../Resources/Images/light/gtk-media-pause.png \
-		../../Resources/Images/light/shuffle.png \
-		../../Resources/Images/light/document-properties.svg \
-		../../Resources/Images/light/gtk-media-forward-rtl.png \
-		../../Resources/Images/light/iSync-Icon.png \
+		../../Resources/Images/dark/gtk-media-stop.png \
+		../../Resources/Images/dark/gear.png \
+		../../Resources/Images/dark/gtk-media-forward-rtl.png \
+		../../Resources/Images/dark/gtk-media-play-ltr.png \
+		../../Resources/Images/dark/repeat.png \
+		../../Resources/Images/dark/mute.png \
+		../../Resources/Images/dark/gtk_media_forward_ltr.png \
+		../../Resources/Images/dark/gtk-media-next-rtl.png \
+		../../Resources/Images/dark/media-volume.png \
+		../../Resources/Images/dark/gtk-media-pause.png \
+		../../Resources/Images/dark/iSync-Icon.png \
+		../../Resources/Images/dark/gtk-media-next-ltr.png \
+		../../Resources/Images/dark/shuffle.png \
+		../../Resources/Images/appicon/qvk.ico \
 		../../Resources/Images/appicon/qvk.png \
 		../../Resources/Images/appicon/qvk.svg \
-		../../Resources/Images/appicon/qvk.ico \
 		../../Resources/Images/appicon/qvk.icns \
-		../../Resources/Images/dark/gtk-media-next-ltr.png \
-		../../Resources/Images/dark/gtk_media_forward_ltr.png \
-		../../Resources/Images/dark/repeat.png \
-		../../Resources/Images/dark/gear.png \
-		../../Resources/Images/dark/gtk-media-stop.png \
-		../../Resources/Images/dark/media-volume.png \
-		../../Resources/Images/dark/mute.png \
-		../../Resources/Images/dark/gtk-media-play-ltr.png \
-		../../Resources/Images/dark/gtk-media-next-rtl.png \
-		../../Resources/Images/dark/gtk-media-pause.png \
-		../../Resources/Images/dark/shuffle.png \
-		../../Resources/Images/dark/gtk-media-forward-rtl.png \
-		../../Resources/Images/dark/iSync-Icon.png
+		../../Resources/Images/light/gtk-media-stop.png \
+		../../Resources/Images/light/gear.png \
+		../../Resources/Images/light/document-properties.svg \
+		../../Resources/Images/light/gtk-media-forward-rtl.png \
+		../../Resources/Images/light/gtk-media-play-ltr.png \
+		../../Resources/Images/light/repeat.png \
+		../../Resources/Images/light/gtk-media-next-rtl.png \
+		../../Resources/Images/light/gtk-media-pause.png \
+		../../Resources/Images/light/iSync-Icon.png \
+		../../Resources/Images/light/gtk-media-next-ltr.png \
+		../../Resources/Images/light/shuffle.png
 	/Users/alekseybodnya/Applications/Qt5.2.1/5.2.1/clang_64/bin/rcc -name icons ../../Resources/Images/icons.qrc -o qrc_icons.cpp
 
 compiler_moc_header_make_all: moc_mainwindow.cpp moc_vkauth.cpp moc_musiccontrol.cpp moc_networker.cpp moc_prefwindow.cpp moc_song.cpp moc_songprovider.cpp moc_settingscontroller.cpp moc_application.cpp moc_hotkeyhandler.cpp
@@ -697,6 +697,9 @@ moc_mainwindow.cpp: ../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidget
 		../../Sources/ViewController/prefwindow.h \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QWidget \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qwidget.h \
+		../../Sources/Model/song.h \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QUrl \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qurl.h \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QSettings \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qsettings.h \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QSystemTrayIcon \
@@ -997,6 +1000,9 @@ main.o: ../../Sources/Prefix/main.cpp ../../../../Applications/Qt5.2.1/5.2.1/cla
 		../../Sources/ViewController/prefwindow.h \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QWidget \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qwidget.h \
+		../../Sources/Model/song.h \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QUrl \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qurl.h \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QSettings \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qsettings.h \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QSystemTrayIcon \
@@ -1109,6 +1115,9 @@ mainwindow.o: ../../Sources/ViewController/mainwindow.cpp ../../Sources/ViewCont
 		../../Sources/ViewController/prefwindow.h \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QWidget \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qwidget.h \
+		../../Sources/Model/song.h \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QUrl \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qurl.h \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QSettings \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qsettings.h \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QSystemTrayIcon \
@@ -1126,9 +1135,6 @@ mainwindow.o: ../../Sources/ViewController/mainwindow.cpp ../../Sources/ViewCont
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qurlquery.h \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QDebug \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qdebug.h \
-		../../Sources/Model/song.h \
-		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QUrl \
-		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qurl.h \
 		../../Sources/Model/songprovider.h \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QList \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qlist.h \

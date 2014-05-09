@@ -10,13 +10,6 @@
 #include <QSettings>
 #include <QSystemTrayIcon>
 #include <QtConcurrent/QtConcurrent>
-#ifdef Q_OS_LINUX
-#include "dbus/dbusmethods.h"
-#include "dbus/dbusadaptor.h"
-#include "dbus/dbusadaptor1.h"
-#include <QtDBus/QDBusConnection>
-#endif
-
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWindow)
 {
@@ -111,23 +104,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     connect(settingsWindow,SIGNAL(setNewSettings(bool,bool,bool,bool)),this,SLOT(setNewSettings(bool,bool,bool,bool)));
     ///connection area
 
-    ///DBUS setting
-#ifdef Q_OS_LINUX
-    DBusMethods* demo = new DBusMethods();
-    new DBusAdaptor(demo);
-    new DBusAdaptor1(demo);
-
-    QDBusConnection connection = QDBusConnection::sessionBus();
-    bool ret = connection.registerService("org.mpris.MediaPlayer2.qvkplayer.mainwindow");
-    ret = connection.registerObject("/org/mpris/MediaPlayer2", demo);
-    connect(demo,SIGNAL(dbusNext()),ui->nextButton,SIGNAL(clicked()));
-    connect(demo,SIGNAL(dbusPlayPause()),ui->tooglePlayingButton,SIGNAL(clicked()));
-    connect(demo,SIGNAL(dbusPrev()),ui->prevButton,SIGNAL(clicked()));
-    connect(demo,SIGNAL(dbusQuit()),qApp,SLOT(quit()));
-    connect(demo,SIGNAL(dbusRaise()),this,SLOT(show()));
-#endif
-
-    ///DBUS setting
     loadSettings();
 }
 
@@ -225,7 +201,6 @@ void MainWindow::setSongUi(int current,int prev)
 
 void MainWindow::currentSearch(QString text)
 {
-    qDebug()<<"USER IS SEARCHING======================================";
     ui->searchField->setStyleSheet("QLineEdit{background: #FFFFFF;}");    //white for search line
     qDebug()<<text;
     QList<Song *> foundList = SongProvider::sharedProvider()->songsWithTitleContains(text);
@@ -353,9 +328,6 @@ MainWindow::~MainWindow()
 {
     trayIcon->hide();
     qvkApp->settings->save();
-#ifdef Q_OS_LINUX
-    system("dbus-send --print-reply --dest=org.mpris.MediaPlayer2.qvkplayer.icon /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Quit");
-#endif
     delete ui;
     delete trayIcon;
     delete music;
