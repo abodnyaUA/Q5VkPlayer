@@ -33,6 +33,9 @@ signals:
 public slots:
     void updateSongList(QList<Song *>);
 
+private slots:
+    void didDownloadSong(Song *song);
+
 private:
     SongProvider(QObject *parent = 0);
     SongProvider(const SongProvider&);

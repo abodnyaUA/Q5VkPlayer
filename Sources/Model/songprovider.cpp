@@ -9,6 +9,7 @@ SongProvider::SongProvider(QObject *parent) : QObject(parent)
 {
     updateFromLocalCopy();
     connect(NetWorker::sharedNetworker(), SIGNAL(didRecieveSongs(QList<Song *>)), this, SLOT(updateSongList(QList<Song *>)));
+    connect(NetWorker::sharedNetworker(), SIGNAL(didDownloadSong(Song*)), this, SLOT(didDownloadSong(Song*)));
 }
 
 SongProvider *SongProvider::sharedProvider()
@@ -66,10 +67,22 @@ QList<Song *> SongProvider::songsWithTitleContains(QString searchPart)
 QString SongProvider::musicFolderPath()
 {
     QString musicDirectory = QDir::homePath() + SLASH + "Music" + SLASH;
-#ifdef Q_OS_OSX
-//    musicDirectory += "iTunes/iTunes Media/Automatically Add to iTunes/";
-#endif
     return musicDirectory;
+}
+
+void SongProvider::didDownloadSong(Song *song)
+{
+    QString fileName = song->fullName() + ".mp3";
+    QString newPath = musicFolderPath() + fileName;
+
+    QUrl localUrl = QUrl ("file://" + newPath);
+    song->url = localUrl;
+    song->local = true;
+
+#ifdef Q_OS_OSX
+    QString iTunesPath = QDir::homePath() + SLASH + "Music" + SLASH + "iTunes/iTunes Media/Automatically Add to iTunes.localized/";
+    QFile::copy(newPath,iTunesPath + fileName);
+#endif
 }
 
 void SongProvider::updateFromLocalCopy()
