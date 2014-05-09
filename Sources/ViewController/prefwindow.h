@@ -27,7 +27,7 @@ public slots:
 signals:
     void changedUseCacheSettings(bool use, QString path);
     void changedUseHotkeysSettings(bool use, int index);
-    void setNewSettings(bool use, bool media, bool cache, QString path, bool minTray);
+    void setNewSettings(bool use, bool media, bool cache, bool minTray);
 private slots:
     void sendNewSettings();
 

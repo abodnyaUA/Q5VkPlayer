@@ -1,7 +1,7 @@
-#include <QApplication>
 #include <QTextCodec>
 #include <QMetaType>
 #include "Sources/ViewController/mainwindow.h"
+#include "Sources/Prefix/application.h"
 
 #ifdef WIN32
 #ifdef QT_NO_DEBUG
@@ -37,13 +37,13 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &/*context*/,
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    Application a(argc, argv);
 
     qRegisterMetaType<QList<QUrl> >("QList<QUrl>");
-    QCoreApplication::setOrganizationName("kazak1377");
-    QCoreApplication::setOrganizationDomain("kazak1377.16mb.com");
-    QCoreApplication::setApplicationName("QVkPlayer");
-    QCoreApplication::setApplicationVersion("0.8a");
+    a.setOrganizationName("kazak1377");
+    a.setOrganizationDomain("kazak1377.16mb.com");
+    a.setApplicationName("QVkPlayer");
+    a.setApplicationVersion("0.8a");
 #ifdef WIN32
 #ifdef QT_NO_DEBUG
     qInstallMessageHandler(customMessageHandler);
@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
     a.addLibraryPath(a.applicationDirPath());
 
     MainWindow w;
-    w.setWindowIcon(QIcon(":/icons/qvk.ico"));
+    w.setWindowIcon(QIcon(":/Resources/Images/appicon/qvk.ico"));
     w.show();
     return a.exec();
 }

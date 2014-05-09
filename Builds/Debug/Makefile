@@ -52,14 +52,18 @@ SOURCES       = ../../Sources/Prefix/main.cpp \
 		../../Sources/Controller/Network/networker.cpp \
 		../../Sources/ViewController/prefwindow.cpp \
 		../../Sources/Model/song.cpp \
-		../../Sources/Model/songprovider.cpp qrc_icons.cpp \
+		../../Sources/Model/songprovider.cpp \
+		../../Sources/Controller/Settings/settingscontroller.cpp \
+		../../Sources/Prefix/application.cpp qrc_icons.cpp \
 		moc_mainwindow.cpp \
 		moc_vkauth.cpp \
 		moc_musiccontrol.cpp \
 		moc_networker.cpp \
 		moc_prefwindow.cpp \
 		moc_song.cpp \
-		moc_songprovider.cpp
+		moc_songprovider.cpp \
+		moc_settingscontroller.cpp \
+		moc_application.cpp
 OBJECTS       = main.o \
 		mainwindow.o \
 		vkauth.o \
@@ -68,6 +72,8 @@ OBJECTS       = main.o \
 		prefwindow.o \
 		song.o \
 		songprovider.o \
+		settingscontroller.o \
+		application.o \
 		qrc_icons.o \
 		moc_mainwindow.o \
 		moc_vkauth.o \
@@ -75,7 +81,9 @@ OBJECTS       = main.o \
 		moc_networker.o \
 		moc_prefwindow.o \
 		moc_song.o \
-		moc_songprovider.o
+		moc_songprovider.o \
+		moc_settingscontroller.o \
+		moc_application.o
 DIST          = /Applications/Qt5.2.1/5.2.1/clang_64/mkspecs/features/spec_pre.prf \
 		/Applications/Qt5.2.1/5.2.1/clang_64/mkspecs/qdevice.pri \
 		/Applications/Qt5.2.1/5.2.1/clang_64/mkspecs/features/device_config.prf \
@@ -516,7 +524,7 @@ QVkPlayer.app/Contents/Resources/qvk.icns: ../../Resources/Images/appicon/qvk.ic
 	@$(COPY_FILE) ../../Resources/Images/appicon/qvk.icns QVkPlayer.app/Contents/Resources/qvk.icns
 dist: 
 	@test -d .tmp/QVkPlayer1.0.0 || mkdir -p .tmp/QVkPlayer1.0.0
-	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/QVkPlayer1.0.0/ && $(COPY_FILE) --parents ../../Resources/Images/icons.qrc .tmp/QVkPlayer1.0.0/ && $(COPY_FILE) --parents ../../Sources/ViewController/mainwindow.h ../../Sources/Controller/Network/vkauth.h ../../Sources/Controller/musiccontrol.h ../../Sources/Controller/Network/networker.h ../../Sources/ViewController/prefwindow.h ../../Sources/Model/song.h ../../Sources/Model/songprovider.h .tmp/QVkPlayer1.0.0/ && $(COPY_FILE) --parents ../../Sources/Prefix/main.cpp ../../Sources/ViewController/mainwindow.cpp ../../Sources/Controller/Network/vkauth.cpp ../../Sources/Controller/musiccontrol.cpp ../../Sources/Controller/Network/networker.cpp ../../Sources/ViewController/prefwindow.cpp ../../Sources/Model/song.cpp ../../Sources/Model/songprovider.cpp .tmp/QVkPlayer1.0.0/ && $(COPY_FILE) --parents ../../Resources/UI/mainwindow.ui ../../Resources/UI/prefwindow.ui .tmp/QVkPlayer1.0.0/ && (cd `dirname .tmp/QVkPlayer1.0.0` && $(TAR) QVkPlayer1.0.0.tar QVkPlayer1.0.0 && $(COMPRESS) QVkPlayer1.0.0.tar) && $(MOVE) `dirname .tmp/QVkPlayer1.0.0`/QVkPlayer1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/QVkPlayer1.0.0
+	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/QVkPlayer1.0.0/ && $(COPY_FILE) --parents ../../Resources/Images/icons.qrc .tmp/QVkPlayer1.0.0/ && $(COPY_FILE) --parents ../../Sources/ViewController/mainwindow.h ../../Sources/Controller/Network/vkauth.h ../../Sources/Controller/musiccontrol.h ../../Sources/Controller/Network/networker.h ../../Sources/ViewController/prefwindow.h ../../Sources/Model/song.h ../../Sources/Model/songprovider.h ../../Sources/Controller/Settings/settingscontroller.h ../../Sources/Prefix/application.h .tmp/QVkPlayer1.0.0/ && $(COPY_FILE) --parents ../../Sources/Prefix/main.cpp ../../Sources/ViewController/mainwindow.cpp ../../Sources/Controller/Network/vkauth.cpp ../../Sources/Controller/musiccontrol.cpp ../../Sources/Controller/Network/networker.cpp ../../Sources/ViewController/prefwindow.cpp ../../Sources/Model/song.cpp ../../Sources/Model/songprovider.cpp ../../Sources/Controller/Settings/settingscontroller.cpp ../../Sources/Prefix/application.cpp .tmp/QVkPlayer1.0.0/ && $(COPY_FILE) --parents ../../Resources/UI/mainwindow.ui ../../Resources/UI/prefwindow.ui .tmp/QVkPlayer1.0.0/ && (cd `dirname .tmp/QVkPlayer1.0.0` && $(TAR) QVkPlayer1.0.0.tar QVkPlayer1.0.0 && $(COMPRESS) QVkPlayer1.0.0.tar) && $(MOVE) `dirname .tmp/QVkPlayer1.0.0`/QVkPlayer1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/QVkPlayer1.0.0
 
 
 clean:compiler_clean 
@@ -544,39 +552,39 @@ compiler_rcc_clean:
 	-$(DEL_FILE) qrc_icons.cpp
 qrc_icons.cpp: ../../Resources/Images/icons.qrc \
 		../../Resources/Images/Music-icon.png \
-		../../Resources/Images/appicon/qvk.ico \
+		../../Resources/Images/dark/gtk-media-forward-rtl.png \
+		../../Resources/Images/dark/gtk-media-next-ltr.png \
+		../../Resources/Images/dark/repeat.png \
+		../../Resources/Images/dark/gtk-media-stop.png \
+		../../Resources/Images/dark/media-volume.png \
+		../../Resources/Images/dark/gtk_media_forward_ltr.png \
+		../../Resources/Images/dark/gear.png \
+		../../Resources/Images/dark/gtk-media-pause.png \
+		../../Resources/Images/dark/gtk-media-play-ltr.png \
+		../../Resources/Images/dark/iSync-Icon.png \
+		../../Resources/Images/dark/mute.png \
+		../../Resources/Images/dark/shuffle.png \
+		../../Resources/Images/dark/gtk-media-next-rtl.png \
+		../../Resources/Images/light/gtk-media-forward-rtl.png \
+		../../Resources/Images/light/gtk-media-next-ltr.png \
+		../../Resources/Images/light/repeat.png \
+		../../Resources/Images/light/gtk-media-stop.png \
+		../../Resources/Images/light/gear.png \
+		../../Resources/Images/light/document-properties.svg \
+		../../Resources/Images/light/gtk-media-pause.png \
+		../../Resources/Images/light/gtk-media-play-ltr.png \
+		../../Resources/Images/light/iSync-Icon.png \
+		../../Resources/Images/light/shuffle.png \
+		../../Resources/Images/light/gtk-media-next-rtl.png \
+		../../Resources/Images/appicon/qvk.icns \
 		../../Resources/Images/appicon/qvk.png \
 		../../Resources/Images/appicon/qvk.svg \
-		../../Resources/Images/appicon/qvk.icns \
-		../../Resources/Images/light/shuffle.png \
-		../../Resources/Images/light/gtk-media-next-ltr.png \
-		../../Resources/Images/light/gtk-media-pause.png \
-		../../Resources/Images/light/gtk-media-stop.png \
-		../../Resources/Images/light/document-properties.svg \
-		../../Resources/Images/light/iSync-Icon.png \
-		../../Resources/Images/light/gtk-media-forward-rtl.png \
-		../../Resources/Images/light/gtk-media-play-ltr.png \
-		../../Resources/Images/light/gtk-media-next-rtl.png \
-		../../Resources/Images/light/repeat.png \
-		../../Resources/Images/light/gear.png \
-		../../Resources/Images/dark/media-volume.png \
-		../../Resources/Images/dark/shuffle.png \
-		../../Resources/Images/dark/gtk-media-next-ltr.png \
-		../../Resources/Images/dark/mute.png \
-		../../Resources/Images/dark/gtk-media-pause.png \
-		../../Resources/Images/dark/gtk-media-stop.png \
-		../../Resources/Images/dark/iSync-Icon.png \
-		../../Resources/Images/dark/gtk-media-forward-rtl.png \
-		../../Resources/Images/dark/gtk_media_forward_ltr.png \
-		../../Resources/Images/dark/gtk-media-play-ltr.png \
-		../../Resources/Images/dark/gtk-media-next-rtl.png \
-		../../Resources/Images/dark/repeat.png \
-		../../Resources/Images/dark/gear.png
+		../../Resources/Images/appicon/qvk.ico
 	/Users/alekseybodnya/Applications/Qt5.2.1/5.2.1/clang_64/bin/rcc -name icons ../../Resources/Images/icons.qrc -o qrc_icons.cpp
 
-compiler_moc_header_make_all: moc_mainwindow.cpp moc_vkauth.cpp moc_musiccontrol.cpp moc_networker.cpp moc_prefwindow.cpp moc_song.cpp moc_songprovider.cpp
+compiler_moc_header_make_all: moc_mainwindow.cpp moc_vkauth.cpp moc_musiccontrol.cpp moc_networker.cpp moc_prefwindow.cpp moc_song.cpp moc_songprovider.cpp moc_settingscontroller.cpp moc_application.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_mainwindow.cpp moc_vkauth.cpp moc_musiccontrol.cpp moc_networker.cpp moc_prefwindow.cpp moc_song.cpp moc_songprovider.cpp
+	-$(DEL_FILE) moc_mainwindow.cpp moc_vkauth.cpp moc_musiccontrol.cpp moc_networker.cpp moc_prefwindow.cpp moc_song.cpp moc_songprovider.cpp moc_settingscontroller.cpp moc_application.cpp
 moc_mainwindow.cpp: ../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QMainWindow \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qmainwindow.h \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QApplication \
@@ -826,6 +834,23 @@ moc_songprovider.cpp: ../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore
 		../../Sources/Model/songprovider.h
 	/Users/alekseybodnya/Applications/Qt5.2.1/5.2.1/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 $(INCPATH) ../../Sources/Model/songprovider.h -o moc_songprovider.cpp
 
+moc_settingscontroller.cpp: ../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QObject \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qobject.h \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QSettings \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qsettings.h \
+		../../Sources/Controller/Settings/settingscontroller.h
+	/Users/alekseybodnya/Applications/Qt5.2.1/5.2.1/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 $(INCPATH) ../../Sources/Controller/Settings/settingscontroller.h -o moc_settingscontroller.cpp
+
+moc_application.cpp: ../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QApplication \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qapplication.h \
+		../../Sources/Controller/Settings/settingscontroller.h \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QObject \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qobject.h \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QSettings \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qsettings.h \
+		../../Sources/Prefix/application.h
+	/Users/alekseybodnya/Applications/Qt5.2.1/5.2.1/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 $(INCPATH) ../../Sources/Prefix/application.h -o moc_application.cpp
+
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
 compiler_uic_make_all: ui_mainwindow.h ui_prefwindow.h
@@ -1072,6 +1097,8 @@ mainwindow.o: ../../Sources/ViewController/mainwindow.cpp ../../Sources/ViewCont
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QMetaType \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qmetatype.h \
 		ui_mainwindow.h \
+		../../Sources/Prefix/application.h \
+		../../Sources/Controller/Settings/settingscontroller.h \
 		../../Sources/Controller/Network/networker.h \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QUrlQuery \
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qurlquery.h \
@@ -1362,6 +1389,48 @@ songprovider.o: ../../Sources/Model/songprovider.cpp ../../Sources/Model/songpro
 		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qdebug.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o songprovider.o ../../Sources/Model/songprovider.cpp
 
+settingscontroller.o: ../../Sources/Controller/Settings/settingscontroller.cpp ../../Sources/Controller/Settings/settingscontroller.h \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QObject \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qobject.h \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QSettings \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qsettings.h \
+		../../Sources/Controller/Network/networker.h \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QMainWindow \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qmainwindow.h \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QApplication \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qapplication.h \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QMessageBox \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qmessagebox.h \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QByteArray \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qbytearray.h \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QXmlStreamReader \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qxmlstream.h \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QAction \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qaction.h \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QMenu \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qmenu.h \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QFile \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qfile.h \
+		../../Sources/Controller/Network/vkauth.h \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QUrlQuery \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qurlquery.h \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QDebug \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qdebug.h \
+		../../Sources/Model/song.h \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QUrl \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qurl.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o settingscontroller.o ../../Sources/Controller/Settings/settingscontroller.cpp
+
+application.o: ../../Sources/Prefix/application.cpp ../../Sources/Prefix/application.h \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QApplication \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qapplication.h \
+		../../Sources/Controller/Settings/settingscontroller.h \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QObject \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qobject.h \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/QSettings \
+		../../../../Applications/Qt5.2.1/5.2.1/clang_64/lib/QtCore.framework/Versions/5/Headers/qsettings.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o application.o ../../Sources/Prefix/application.cpp
+
 qrc_icons.o: qrc_icons.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_icons.o qrc_icons.cpp
 
@@ -1385,6 +1454,12 @@ moc_song.o: moc_song.cpp
 
 moc_songprovider.o: moc_songprovider.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_songprovider.o moc_songprovider.cpp
+
+moc_settingscontroller.o: moc_settingscontroller.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_settingscontroller.o moc_settingscontroller.cpp
+
+moc_application.o: moc_application.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_application.o moc_application.cpp
 
 ####### Install
 

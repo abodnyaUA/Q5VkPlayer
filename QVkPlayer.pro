@@ -25,7 +25,9 @@ SOURCES += \
     Sources/Controller/Network/networker.cpp \
     Sources/ViewController/prefwindow.cpp \
     Sources/Model/song.cpp \
-    Sources/Model/songprovider.cpp
+    Sources/Model/songprovider.cpp \
+    Sources/Controller/Settings/settingscontroller.cpp \
+    Sources/Prefix/application.cpp
 
 HEADERS += \
     Sources/ViewController/mainwindow.h \
@@ -34,7 +36,9 @@ HEADERS += \
     Sources/Controller/Network/networker.h \
     Sources/ViewController/prefwindow.h \
     Sources/Model/song.h \
-    Sources/Model/songprovider.h
+    Sources/Model/songprovider.h \
+    Sources/Controller/Settings/settingscontroller.h \
+    Sources/Prefix/application.h
 
 FORMS += \
     Resources/UI/mainwindow.ui \

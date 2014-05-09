@@ -70,18 +70,18 @@ static const uint qt_meta_data_PrefWindow[] = {
  // signals: name, argc, parameters, tag, flags
        1,    2,   49,    2, 0x06,
        5,    2,   54,    2, 0x06,
-       7,    5,   59,    2, 0x06,
+       7,    4,   59,    2, 0x06,
 
  // slots: name, argc, parameters, tag, flags
-      11,    2,   70,    2, 0x0a,
-      12,    2,   75,    2, 0x0a,
-      13,    1,   80,    2, 0x0a,
-      15,    0,   83,    2, 0x08,
+      11,    2,   68,    2, 0x0a,
+      12,    2,   73,    2, 0x0a,
+      13,    1,   78,    2, 0x0a,
+      15,    0,   81,    2, 0x08,
 
  // signals: parameters
     QMetaType::Void, QMetaType::Bool, QMetaType::QString,    3,    4,
     QMetaType::Void, QMetaType::Bool, QMetaType::Int,    3,    6,
-    QMetaType::Void, QMetaType::Bool, QMetaType::Bool, QMetaType::Bool, QMetaType::QString, QMetaType::Bool,    3,    8,    9,    4,   10,
+    QMetaType::Void, QMetaType::Bool, QMetaType::Bool, QMetaType::Bool, QMetaType::Bool,    3,    8,    9,   10,
 
  // slots: parameters
     QMetaType::Void, QMetaType::Bool, QMetaType::Bool,    3,    8,
@@ -99,7 +99,7 @@ void PrefWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         switch (_id) {
         case 0: _t->changedUseCacheSettings((*reinterpret_cast< bool(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2]))); break;
         case 1: _t->changedUseHotkeysSettings((*reinterpret_cast< bool(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
-        case 2: _t->setNewSettings((*reinterpret_cast< bool(*)>(_a[1])),(*reinterpret_cast< bool(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< QString(*)>(_a[4])),(*reinterpret_cast< bool(*)>(_a[5]))); break;
+        case 2: _t->setNewSettings((*reinterpret_cast< bool(*)>(_a[1])),(*reinterpret_cast< bool(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< bool(*)>(_a[4]))); break;
         case 3: _t->setUseHotkeysUi((*reinterpret_cast< bool(*)>(_a[1])),(*reinterpret_cast< bool(*)>(_a[2]))); break;
         case 4: _t->setUseCacheUi((*reinterpret_cast< bool(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2]))); break;
         case 5: _t->setUseMinTray((*reinterpret_cast< bool(*)>(_a[1]))); break;
@@ -122,7 +122,7 @@ void PrefWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
             }
         }
         {
-            typedef void (PrefWindow::*_t)(bool , bool , bool , QString , bool );
+            typedef void (PrefWindow::*_t)(bool , bool , bool , bool );
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&PrefWindow::setNewSettings)) {
                 *result = 2;
             }
@@ -181,9 +181,9 @@ void PrefWindow::changedUseHotkeysSettings(bool _t1, int _t2)
 }
 
 // SIGNAL 2
-void PrefWindow::setNewSettings(bool _t1, bool _t2, bool _t3, QString _t4, bool _t5)
+void PrefWindow::setNewSettings(bool _t1, bool _t2, bool _t3, bool _t4)
 {
-    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)), const_cast<void*>(reinterpret_cast<const void*>(&_t3)), const_cast<void*>(reinterpret_cast<const void*>(&_t4)), const_cast<void*>(reinterpret_cast<const void*>(&_t5)) };
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)), const_cast<void*>(reinterpret_cast<const void*>(&_t3)), const_cast<void*>(reinterpret_cast<const void*>(&_t4)) };
     QMetaObject::activate(this, &staticMetaObject, 2, _a);
 }
 QT_END_MOC_NAMESPACE

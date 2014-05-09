@@ -39,17 +39,11 @@ class MainWindow : public QMainWindow
     QSystemTrayIcon *trayIcon;
     PrefWindow *settingsWindow;
     void closeEvent(QCloseEvent *event);
-    bool useHotkeys;
-    bool useMediaHotkeys;
-    bool useCache;
-    bool minToTray;
     QString desktop;
-    bool isUnity;
-//    QThread *netWorkThread;
-//    QThread *mediaThread;
 #ifdef WIN32
     bool nativeEvent(const QByteArray &eventType, void *message, long *result);
 #endif
+    void loadSettings();
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -60,8 +54,7 @@ public slots:
     void setPausedUi();
     void positionChanged(qint64 position);
     void durationChanged(qint64 duration);
-    void offlineDebugFunction();
-    void setNewSettings(bool use, bool media, bool cache, QString path, bool minTray);
+    void setNewSettings(bool use, bool media, bool cache, bool minTray);
 private slots:
     void currentSearch(QString text);
     void about();
@@ -71,9 +64,6 @@ private slots:
 #endif
 private:
     Ui::MainWindow *ui;
-    QSettings *settings;
-    void loadSettings();
-    void saveSettings();
 signals:
     void loadToken(QString,QString);
     void setPlayingOrder(QList<QUrl>);

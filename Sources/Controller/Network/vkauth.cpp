@@ -7,6 +7,7 @@
 #include <QtWebKitWidgets/QWebView>
 #include <QUrlQuery>
 #include <QMessageBox>
+#include "Sources/Controller/Network/networker.h"
 
 VkAuth::VkAuth(QWidget *parent) : QWebView(parent)
 {
@@ -55,7 +56,8 @@ void VkAuth::slotUrlChanged(QUrl url)
                 this,
                 tr("Login successful"),
                 tr("You have successfuly log in.") );
-   this->deleteLater();
+    NetWorker::sharedNetworker()->getAudioList();
+    this->deleteLater();
 }
 
 

@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "Sources/Prefix/application.h"
 #include "Sources/Controller/Network/vkauth.h"
 #include "Sources/Controller/Network/networker.h"
 #include "Sources/Controller/musiccontrol.h"
@@ -25,13 +26,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     ui->setupUi(this);
 
     music = new MusicControl;
-    settings = new QSettings(this);
     settingsWindow = new PrefWindow(this);
     settingsWindow->setWindowFlags(Qt::Dialog);
     ui->lineEdit->setPlaceholderText("Search here");
     ui->seekSlider->setRange(0,0);
     ui->repeatButton->hide();
-    isUnity = false;
 
     ///tray icon setup
     QAction *next = new QAction(tr("Next"), this);
@@ -95,8 +94,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
 
     ///connection area
     connect(SongProvider::sharedProvider(),SIGNAL(songListDidUpdated()),this,SLOT(updateMusicTable()));
-    connect(this,SIGNAL(setPlayingOrder(QList<QUrl>)),music,SLOT(setPlayList(QList<QUrl>)));
     connect(ui->volumeSlider,SIGNAL(valueChanged(int)),music,SLOT(volumeSliderSlot(int)));
+    connect(ui->volumeSlider,SIGNAL(valueChanged(int)),qvkApp->settings,SLOT(setVolume(int)));
     connect(ui->musicWidget,SIGNAL(cellDoubleClicked(int,int)),music,SLOT(playThatSong(int,int)));
     connect(ui->shuffButton,SIGNAL(toggled(bool)),music,SLOT(shuffleMode(bool)));
     connect(ui->nextButton,SIGNAL(clicked()),music,SLOT(playNextSong()));
@@ -114,8 +113,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     connect(this,SIGNAL(loadToken(QString,QString)),NetWorker::sharedNetworker(),SLOT(setToken(QString,QString)));
     connect(this,SIGNAL(setPrefWindowsHotkeysUi(bool,bool)),settingsWindow,SLOT(setUseHotkeysUi(bool,bool)));
     connect(this,SIGNAL(setMinToTray(bool)),settingsWindow,SLOT(setUseMinTray(bool)));
-    connect(settingsWindow,SIGNAL(setNewSettings(bool,bool,bool,QString,bool)),
-            this,SLOT(setNewSettings(bool,bool,bool,QString,bool)));
+    connect(settingsWindow,SIGNAL(setNewSettings(bool,bool,bool,bool)),
+            this,SLOT(setNewSettings(bool,bool,bool,bool)));
     ///connection area
 
     ///DBUS setting
@@ -135,11 +134,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
 #endif
 
     ///DBUS setting
-
-
-
-    ///CONFIG LOADING==================================
-    this->loadSettings();
+    loadSettings();
 }
 #ifdef WIN32
 bool MainWindow::nativeEvent(const QByteArray &eventType, void *message, long *result)  //GLOBAL HOTKEYS handler
@@ -162,57 +157,24 @@ bool MainWindow::nativeEvent(const QByteArray &eventType, void *message, long *r
 }
 #endif
 
-#ifdef Q_OS_LINUX
-void MainWindow::linuxIconShow() {
-#include <stdlib.h>
-    system("python2 tray.py");
-}
-#endif
-
 void MainWindow::loadSettings()
 {
-#ifdef Q_OS_LINUX
-    desktop = getenv("XDG_CURRENT_DESKTOP");
-    isUnity = (desktop.toLower() == "unity");
-    qDebug()<<"CURRENT DESKTOP: " << desktop;
-    if (isUnity)
-    {
-        QtConcurrent::run(this, &MainWindow::linuxIconShow);
-    } else {
-        trayIcon->show();
-    }
-#endif
-#ifdef WIN32
-    trayIcon->show();
-#endif
-    restoreGeometry(settings->value("geometry",saveGeometry()).toByteArray());
-    ui->volumeSlider->setValue(settings->value("volume",50).toInt());
-    QString localToken = settings->value("token","none").toString();
-    QString localUid = settings->value("user_id","none").toString();
-    minToTray = settings->value("minToTrayOnClose",false).toBool();
-    emit loadToken(localToken,localUid);
+    SettingsController *settings = qvkApp->settings;
+
+    restoreGeometry(settings->geometry);
+    ui->volumeSlider->setValue(settings->volume);
+
+    emit loadToken(settings->token,settings->userID);
+
     NetWorker::sharedNetworker()->getAudioList();
-    //this->offlineDebugFunction();
-    useHotkeys = settings->value("useHotkeys",false).toBool();
-    useMediaHotkeys = settings->value("useMediaHotkeys",false).toBool();
-    emit setPrefWindowsHotkeysUi(useHotkeys, useMediaHotkeys);
-    setNewSettings(useHotkeys,useMediaHotkeys,false,"",minToTray);
+
+    emit setPrefWindowsHotkeysUi(settings->useHotkeys(), settings->useMediaHotkeys());
+    settings->useCache = false;
 }
 
-void MainWindow::saveSettings()
+void MainWindow::closeEvent(QCloseEvent *event)
 {
-    settings->setValue("token",NetWorker::sharedNetworker()->getToken());
-    settings->setValue("user_id",NetWorker::sharedNetworker()->getUid());
-    settings->setValue("volume",ui->volumeSlider->value());
-    settings->setValue("geometry",saveGeometry());
-    settings->setValue("useHotkeys",useHotkeys);
-    settings->setValue("useMediaHotkeys",useMediaHotkeys);
-    settings->setValue("minToTrayOnClose",minToTray);
-}
-
-void MainWindow::closeEvent(QCloseEvent *)
-{
-    if (minToTray)
+    if (qvkApp->settings->minToTray)
     {
 #ifdef WIN32
         if (trayIcon->isVisible())
@@ -227,6 +189,7 @@ void MainWindow::closeEvent(QCloseEvent *)
     }
     else
     {
+        event->accept();
     }
 }
 
@@ -250,90 +213,17 @@ void MainWindow::durationChanged(qint64 duration)
     ui->seekSlider->setRange(0,duration);
 }
 
-void MainWindow::offlineDebugFunction()
+void MainWindow::setNewSettings(bool use, bool media, bool cache, bool minTray)
 {
-    setPausedUi();
-    ui->musicWidget->setRowCount(0);
-    ui->musicWidget->clear();
-    music->clearHistory();
-    QStringList header;
-    ui->musicWidget->setColumnCount(4);
-    header <<"Artist"<<"Title"<<"Duration"<<"link";
-    ui->musicWidget->hideColumn(3);
-    ui->musicWidget->setHorizontalHeaderLabels(header);
-    ui->musicWidget->verticalHeader()->setVisible(false);
-    QStringList debugTableLine;
-    debugTableLine<<"Amy Macdonald"<<"Barrowland Ballroom"<<"03:58"<<"1.mp3";
-    this->setTableLine(debugTableLine);
-    debugTableLine.clear();
-    debugTableLine<<"Amy Macdonald"<<"This is the life"<<"03:06"<<"2.mp3";
-    this->setTableLine(debugTableLine);
-    debugTableLine.clear();
-    debugTableLine<<"Год змеи"<<"Секс и рок-н-ролл"<<"03:04"<<"3.mp3";
-    this->setTableLine(debugTableLine);
-    debugTableLine.clear();
-    debugTableLine<<"One Republic"<<"All The Right Moves"<<"03:58"<<"4.mp3";
-    this->setTableLine(debugTableLine);
-    debugTableLine.clear();
-    debugTableLine<<"One Republic"<<"Everybody Loves Me"<<"3:40"<<"5.mp3";
-    this->setTableLine(debugTableLine);
-    debugTableLine.clear();
-    QList<QUrl> plst;
-    plst.append(QUrl("1.mp3"));
-    plst.append(QUrl("2.mp3"));
-    plst.append(QUrl("3.mp3"));
-    plst.append(QUrl("4.mp3"));
-    plst.append(QUrl("5.mp3"));
-    qDebug()<<plst;
-    emit setPlayingOrder(plst);
-}
-
-
-void MainWindow::setNewSettings(bool use, bool media, bool cache, QString path, bool minTray)
-{
-    qDebug()<<use<<" "<<media<<" "<<cache<<" "<<path<<" "<<minTray;
-#ifdef WIN32
-    UnregisterHotKey((HWND)winId(),66613);
-    UnregisterHotKey((HWND)winId(),66612);
-    UnregisterHotKey((HWND)winId(),66611);
-#endif
-#ifdef Q_OS_LINUX
-
-#endif
-    useHotkeys = use;
-    useMediaHotkeys = media;
-    useCache = cache;
-    minToTray = minTray;
-    saveSettings();
-    emit setPrefWindowsHotkeysUi(useHotkeys, useMediaHotkeys);
-    emit setMinToTray(minToTray);
-    if (useHotkeys)
-    {
-        if (useMediaHotkeys)
-        {
-#ifdef WIN32
-            RegisterHotKey((HWND)winId(),66613, 0, VK_MEDIA_NEXT_TRACK);
-            RegisterHotKey((HWND)winId(),66612, 0, VK_MEDIA_PREV_TRACK);
-            RegisterHotKey((HWND)winId(),66611, 0, VK_MEDIA_PLAY_PAUSE);
-            qDebug()<<"Registered media hotkeys";
-#endif
-#ifdef Q_OS_LINUX
-
-#endif
-        }
-        else
-        {
-#ifdef WIN32
-            RegisterHotKey((HWND)winId(),66613, MOD_CONTROL, VK_RIGHT);
-            RegisterHotKey((HWND)winId(),66612, MOD_CONTROL, VK_LEFT);
-            RegisterHotKey((HWND)winId(),66611, MOD_CONTROL, VK_DOWN);
-            qDebug()<<"Registered desktop hotkeys";
-#endif
-#ifdef Q_OS_LINUX
-
-#endif
-        }
-    }
+    qDebug()<<use<<" "<<media<<" "<<cache<<" "<<minTray;
+    SettingsController *settings = qvkApp->settings;
+    settings->setUseHotkeys(use);
+    settings->setUseMediaHotkeys(media);
+    settings->useCache = cache;
+    settings->minToTray = minTray;
+    settings->save();
+    emit setPrefWindowsHotkeysUi(use, media);
+    emit setMinToTray(minTray);
 }
 
 void MainWindow::setSongUi(int current,int /*prev*/)
@@ -365,7 +255,6 @@ void MainWindow::setSongUi(int current,int /*prev*/)
     ui->musicWidget->item(current,2)->setFont(boldFont);
     ui->musicWidget->item(current,3)->setFont(boldFont);
 }
-
 
 void MainWindow::about()
 {
@@ -478,13 +367,11 @@ void MainWindow::updateMusicTable()
 MainWindow::~MainWindow()
 {
     trayIcon->hide();
-    saveSettings();
+    qvkApp->settings->save();
 #ifdef Q_OS_LINUX
     system("dbus-send --print-reply --dest=org.mpris.MediaPlayer2.qvkplayer.icon /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Quit");
 #endif
     delete ui;
     delete trayIcon;
     delete music;
-//    delete NetWorker::sharedNetworker();
-//    delete SongProvider::sharedProvider();
 }

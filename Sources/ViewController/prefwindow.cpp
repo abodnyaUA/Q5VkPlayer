@@ -36,7 +36,7 @@ void PrefWindow::sendNewSettings()
     emit setNewSettings(ui->hotkeysCheckBox->isChecked(),
                         ui->comboBox->currentIndex() == 0,
                         ui->cacheCheckBox->isChecked(),
-                        ui->cachePathLine->text(),
+//                        ui->cachePathLine->text(),
                         ui->toTrayCheckBox->isChecked());
     this->hide();
 }
