@@ -26,6 +26,7 @@ void NetWorker::replyFinished(QNetworkReply *reply)
 {
     QList<Song *> songsList;
     Song *song = NULL;
+    uint number = 0;
     if (reply->error() == QNetworkReply::NoError)
     {
         qDebug()<<"Audio list get";
@@ -76,6 +77,7 @@ void NetWorker::replyFinished(QNetworkReply *reply)
                     else if (xml.name() == "url")
                     {
                         song->url = QUrl(xml.readElementText());
+                        song->number = number++;
                         songsList.append(song);
                         song = NULL;
                     }

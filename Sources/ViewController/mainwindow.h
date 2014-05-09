@@ -41,9 +41,6 @@ class MainWindow : public QMainWindow
     PrefWindow *settingsWindow;
     void closeEvent(QCloseEvent *event);
     QString desktop;
-#ifdef WIN32
-    bool nativeEvent(const QByteArray &eventType, void *message, long *result);
-#endif
     void loadSettings();
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -58,6 +55,7 @@ public slots:
     void setNewSettings(bool use, bool media, bool cache, bool minTray);
 private slots:
     void currentSearch(QString text);
+    void updateSearch();
     void about();
     void trayHandler(QSystemTrayIcon::ActivationReason reason);
 #ifdef Q_OS_LINUX

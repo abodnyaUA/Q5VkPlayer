@@ -34,6 +34,21 @@ quint16 SongProvider::songsCount()
     return this->songs.count();
 }
 
+QList<Song *> SongProvider::songsWithTitleContains(QString searchPart)
+{
+    QList<Song *> matches;
+
+    foreach (Song *song, this->songs)
+    {
+        if (song->title.contains(searchPart,Qt::CaseInsensitive) || song->artist.contains(searchPart,Qt::CaseInsensitive))
+        {
+            matches.append(song);
+        }
+    }
+
+    return matches;
+}
+
 SongProvider::~SongProvider()
 {
 //    delete this->songs;

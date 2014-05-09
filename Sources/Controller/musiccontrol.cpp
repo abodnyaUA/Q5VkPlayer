@@ -200,3 +200,8 @@ void MusicControl::changeState()
         break;
     }
 }
+
+int MusicControl::currentSongIndex()
+{
+    return currentIndex;
+}

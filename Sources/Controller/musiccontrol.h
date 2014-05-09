@@ -20,12 +20,15 @@ class MusicControl : public QObject
 public:
     explicit MusicControl(QObject *parent = 0);
     void clearHistory();
+    int currentSongIndex();
+
 signals:
     void setIndexToUi(int,int);
     void setPlayingUi();
     void setPausedUi();
     void newRange(qint64);
     void newPosition(qint64);
+
 public slots:
     void updatePlayList();
     void playThatSong(int,int);

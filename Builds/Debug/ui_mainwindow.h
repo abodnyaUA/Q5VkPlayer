@@ -38,7 +38,7 @@ public:
     QPushButton *nextButton;
     QSlider *seekSlider;
     QSpacerItem *horizontalSpacer_2;
-    QLineEdit *lineEdit;
+    QLineEdit *searchField;
     QPushButton *toolButton;
     QTableWidget *musicWidget;
     QHBoxLayout *horizontalLayout_2;
@@ -108,15 +108,15 @@ public:
 
         horizontalLayout->addItem(horizontalSpacer_2);
 
-        lineEdit = new QLineEdit(centralWidget);
-        lineEdit->setObjectName(QStringLiteral("lineEdit"));
+        searchField = new QLineEdit(centralWidget);
+        searchField->setObjectName(QStringLiteral("searchField"));
         QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(lineEdit->sizePolicy().hasHeightForWidth());
-        lineEdit->setSizePolicy(sizePolicy);
+        sizePolicy.setHeightForWidth(searchField->sizePolicy().hasHeightForWidth());
+        searchField->setSizePolicy(sizePolicy);
 
-        horizontalLayout->addWidget(lineEdit);
+        horizontalLayout->addWidget(searchField);
 
         toolButton = new QPushButton(centralWidget);
         toolButton->setObjectName(QStringLiteral("toolButton"));

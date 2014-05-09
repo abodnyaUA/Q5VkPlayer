@@ -14,6 +14,7 @@ class SongProvider : public QObject
 public:
     static SongProvider *sharedProvider();
     Song *songWithIndex(quint16 index);
+    QList<Song *> songsWithTitleContains(QString searchPart);
     quint16 songsCount();
 
 signals:

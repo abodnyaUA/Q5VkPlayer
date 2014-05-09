@@ -14,6 +14,8 @@ public:
     Application(int &argc, char **argv, int = ApplicationFlags);
     SettingsController *settings;
     HotkeyHandler *hotkeyHandler;
+
+    QString aboutText();
 signals:
 
 public slots:

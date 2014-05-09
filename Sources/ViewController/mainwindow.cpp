@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     music = new MusicControl;
     settingsWindow = new PrefWindow(this);
     settingsWindow->setWindowFlags(Qt::Dialog);
-    ui->lineEdit->setPlaceholderText("Search here");
+    ui->searchField->setPlaceholderText("Search here");
     ui->seekSlider->setRange(0,0);
     ui->repeatButton->hide();
 
@@ -50,10 +50,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     trayIconMenu->addAction(close);
     trayIcon = new QSystemTrayIcon(QIcon(":/Resources/Images/appicon/qvk.svg"));
     trayIcon->setContextMenu(trayIconMenu);
-    connect(trayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,
-            SLOT(trayHandler(QSystemTrayIcon::ActivationReason)));
-    //trayIcon->setVisible(true);
-    //trayIcon->show();
+    connect(trayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this, SLOT(trayHandler(QSystemTrayIcon::ActivationReason)));
 
 
     ///table setting
@@ -99,7 +96,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     connect(ui->prevButton,SIGNAL(clicked()),music,SLOT(playPrevSong()));
     connect(ui->tooglePlayingButton,SIGNAL(clicked()),music,SLOT(changeState()));
     connect(ui->seekSlider,SIGNAL(sliderMoved(int)),music,SLOT(setPosition(int)));
-    connect(ui->lineEdit,SIGNAL(textChanged(QString)),this,SLOT(currentSearch(QString)));
+    connect(ui->searchField,SIGNAL(textChanged(QString)),this,SLOT(currentSearch(QString)));
+    connect(ui->searchField,SIGNAL(returnPressed()),this,SLOT(updateSearch()));
     connect(ui->musicWidget,SIGNAL(cellClicked(int,int)),music,SLOT(setSelectedSong(int,int)));
     connect(ui->repeatButton,SIGNAL(clicked(bool)),music,SLOT(repeatMode(bool)));
     connect(music,SIGNAL(setIndexToUi(int,int)),this,SLOT(setSongUi(int,int)));
@@ -228,37 +226,44 @@ void MainWindow::setSongUi(int current,int prev)
 void MainWindow::currentSearch(QString text)
 {
     qDebug()<<"USER IS SEARCHING======================================";
-    ui->lineEdit->setStyleSheet("QLineEdit{background: #FFFFFF;}");    //white for search line
+    ui->searchField->setStyleSheet("QLineEdit{background: #FFFFFF;}");    //white for search line
     qDebug()<<text;
-    QList<QTableWidgetItem *> foundList;
-    foundList = ui->musicWidget->findItems(text,Qt::MatchContains);
+    QList<Song *> foundList = SongProvider::sharedProvider()->songsWithTitleContains(text);
     if (!foundList.isEmpty())
     {
-        qDebug()<<"Found at row: " ;
-        qDebug()<<foundList[0]->row()+1;
-        ui->musicWidget->selectRow(foundList[0]->row());
+        qDebug()<<"Found song: " << foundList[0]->number+1 << foundList[0]->artist + " - " + foundList[0]->title;
+        ui->musicWidget->selectRow(foundList[0]->number);
     }
     else
     {
-        ui->lineEdit->setStyleSheet("QLineEdit{background: #FF6666;}");   //error for the searchline
+        ui->searchField->setStyleSheet("QLineEdit{background: #FF6666;}");   //error for the searchline
     }
 }
 
-QString MainWindow::durationToHuman(int d)
+void MainWindow::updateSearch()
 {
-    int minutes = d / 60;
-    int seconds = d % 60;
-    QString out;
-#warning time formater
-    if (seconds < 10)
+    QList<Song *> foundList = SongProvider::sharedProvider()->songsWithTitleContains(ui->searchField->text());
+    if (!foundList.isEmpty())
     {
-        out = QString::number(minutes)+":0"+QString::number(seconds);
+        int newSongIndex = 0;
+        uint current = ui->musicWidget->selectedItems()[0]->row();
+        uint founded = foundList[newSongIndex]->number;
+        while (newSongIndex < foundList.count() && current >= founded)
+        {
+            founded = foundList[newSongIndex++]->number;
+        }
+        if (newSongIndex >= foundList.count())
+        {
+            newSongIndex = 0;
+        }
+        qDebug()<<"Found song: " << foundList[newSongIndex]->number+1 << foundList[newSongIndex]->artist + " - " + foundList[newSongIndex]->title;
+        ui->musicWidget->selectRow(foundList[newSongIndex]->number);
     }
-    else
-    {
-        out = QString::number(minutes)+":"+QString::number(seconds);
-    }
-    return out;
+}
+
+QString MainWindow::durationToHuman(int seconds)
+{
+    return QString("%1:%2").arg(seconds / 60).arg(seconds % 60, 2, 10, QChar('0'));;
 }
 
 void MainWindow::addSongInTable(Song *song)
@@ -340,14 +345,7 @@ void MainWindow::trayHandler(QSystemTrayIcon::ActivationReason reason)
 
 void MainWindow::about()
 {
-    QString ab = "It is a Player for playing music from Your Vkontakte playlist.\n"
-            "More features will be avalible later.\n"
-            "\tcurrent version:  '"+QCoreApplication::applicationVersion()+"'\n"
-            " credits:\n"
-            "\tMe: kazak1377(Maxim Kozachenko)\n"
-            "Thanks to:\n"
-            "\tQt team\n"
-            "\tmembers of c_plus_plus jabber.ru conference";
+    QString ab = qvkApp->aboutText();
     QMessageBox::information(this, tr("About QVkPlayer"),ab);
 }
 
