@@ -105,6 +105,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     ///connection area
 
     loadSettings();
+
+    this->installEventFilter(qvkApp->hotkeyHandler);
+    ui->musicWidget->viewport()->installEventFilter(qvkApp->hotkeyHandler);
+    ui->musicWidget->installEventFilter(qvkApp->hotkeyHandler);
 }
 
 #pragma mark - Settings

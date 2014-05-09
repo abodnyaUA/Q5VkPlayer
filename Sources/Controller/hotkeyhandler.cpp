@@ -1,4 +1,8 @@
 #include "hotkeyhandler.h"
+#include <QKeyEvent>
+#include <QApplication>
+#include <QWidget>
+#include <QDebug>
 
 #ifdef WIN32
 #include <windows.h>
@@ -18,6 +22,36 @@ HotkeyHandler::HotkeyHandler(QObject *parent) :
 #ifdef Q_OS_LINUX
     setupDBus();
 #endif
+}
+
+bool HotkeyHandler::eventFilter(QObject *, QEvent *event)
+{
+    if (event->type() == QEvent::KeyPress)
+    {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        int keyInt = keyEvent->key();
+        Qt::Key key = static_cast<Qt::Key>(keyInt);
+
+        qDebug() << key;
+        switch (key)
+        {
+        case Qt::Key_Space:
+        case Qt::Key_Pause:
+        case Qt::Key_MediaPlay:
+        case Qt::Key_MediaStop:
+        case Qt::Key_MediaPause:
+            emit didTapPlayPauseButton();
+            break;
+        case Qt::Key_MediaPrevious:
+            emit didTapPrevButton();
+        case Qt::Key_MediaNext:
+            emit didTapNextButton();
+        default:
+            break;
+        }
+        return true;
+    }
+    return false;
 }
 
 #ifdef WIN32

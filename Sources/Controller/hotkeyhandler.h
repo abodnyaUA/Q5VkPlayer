@@ -23,6 +23,9 @@ signals:
     void didTapNextButton();
     void didTapPrevButton();
     void didTapPlayPauseButton();
+
+protected:
+    bool eventFilter(QObject *, QEvent *event);
 };
 
 #endif // HOTKEYHANDLER_H
