@@ -27,7 +27,8 @@ SOURCES += \
     Sources/Model/song.cpp \
     Sources/Model/songprovider.cpp \
     Sources/Controller/Settings/settingscontroller.cpp \
-    Sources/Prefix/application.cpp
+    Sources/Prefix/application.cpp \
+    Sources/Controller/hotkeyhandler.cpp
 
 HEADERS += \
     Sources/ViewController/mainwindow.h \
@@ -38,7 +39,9 @@ HEADERS += \
     Sources/Model/song.h \
     Sources/Model/songprovider.h \
     Sources/Controller/Settings/settingscontroller.h \
-    Sources/Prefix/application.h
+    Sources/Prefix/application.h \
+    Sources/Controller/hotkeyhandler.h \
+    Sources/Controller/notificationssender.h
 
 FORMS += \
     Resources/UI/mainwindow.ui \
@@ -56,6 +59,9 @@ RESOURCES += \
 win32 {
     QMAKE_LFLAGS += -static-libgcc
     RC_FILE = Resources/Images/appicon/winicon.rc
+
+    SOURCES += \
+    Sources/Controller/notificationssender.cpp
 }
 
 # LINUX
@@ -70,14 +76,21 @@ unix : !macx {
         ThirdParty/dbus/dbusadaptor.h \
         ThirdParty/dbus/dbusmethods.h \
         ThirdParty/dbus/dbusadaptor1.h
+
+    SOURCES += \
+    Sources/Controller/notificationssender.cpp
 }
 
 # MAC OS X
 macx {
+    LIBS += -framework Foundation
     ICON = Resources/Images/appicon/qvk.icns
     RC_FILE = Resources/Images/appicon/qvk.icns
     QMAKE_INFO_PLIST = Resources/Plist/QVkPlayer-Info.plist
     OTHER_FILES += Resources/Plist/QVkPlayer-Info.plist
     QMAKE_CXXFLAGS = -mmacosx-version-min=10.7 -std=gnu0x -stdlib=libc++
     CONFIG+=c++11
+
+    OBJECTIVE_SOURCES += \
+    Sources/Controller/notificationssender.mm
 }

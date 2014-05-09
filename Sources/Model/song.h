@@ -11,7 +11,7 @@ public:
     explicit Song(QObject *parent = 0);
     QString artist;
     QString title;
-    QString duration;
+    uint duration;
     QUrl url;
 signals:
 

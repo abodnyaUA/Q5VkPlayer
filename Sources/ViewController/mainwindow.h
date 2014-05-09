@@ -14,6 +14,7 @@
 #include "Sources/Controller/Network/vkauth.h"
 #include "Sources/Controller/musiccontrol.h"
 #include "Sources/ViewController/prefwindow.h"
+#include "Sources/Model/song.h"
 #include <QSettings>
 #include <QSystemTrayIcon>
 #include <QThread>
@@ -34,7 +35,7 @@ class MainWindow : public QMainWindow
     QStringList tableLine;
     QList<QUrl> linkList;
     QString durationToHuman(int d);
-    void setTableLine(QStringList line);
+    void addSongInTable(Song *song);
     MusicControl *music;
     QSystemTrayIcon *trayIcon;
     PrefWindow *settingsWindow;

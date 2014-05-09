@@ -10,7 +10,7 @@ class SongProvider : public QObject
     Q_OBJECT
     static SongProvider *__sharedProvider;
     QList<Song *> songs;
-
+    ~SongProvider();
 public:
     static SongProvider *sharedProvider();
     Song *songWithIndex(quint16 index);

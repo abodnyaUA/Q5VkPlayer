@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_MusicControl_t {
-    QByteArrayData data[20];
-    char stringdata[256];
+    QByteArrayData data[22];
+    char stringdata[285];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -39,24 +39,27 @@ QT_MOC_LITERAL(6, 61, 11),
 QT_MOC_LITERAL(7, 73, 14),
 QT_MOC_LITERAL(8, 88, 12),
 QT_MOC_LITERAL(9, 101, 11),
-QT_MOC_LITERAL(10, 113, 12),
-QT_MOC_LITERAL(11, 126, 12),
-QT_MOC_LITERAL(12, 139, 11),
-QT_MOC_LITERAL(13, 151, 16),
+QT_MOC_LITERAL(10, 113, 14),
+QT_MOC_LITERAL(11, 128, 13),
+QT_MOC_LITERAL(12, 142, 12),
+QT_MOC_LITERAL(13, 155, 12),
 QT_MOC_LITERAL(14, 168, 11),
-QT_MOC_LITERAL(15, 180, 8),
-QT_MOC_LITERAL(16, 189, 12),
-QT_MOC_LITERAL(17, 202, 25),
-QT_MOC_LITERAL(18, 228, 15),
-QT_MOC_LITERAL(19, 244, 10)
+QT_MOC_LITERAL(15, 180, 16),
+QT_MOC_LITERAL(16, 197, 11),
+QT_MOC_LITERAL(17, 209, 8),
+QT_MOC_LITERAL(18, 218, 12),
+QT_MOC_LITERAL(19, 231, 25),
+QT_MOC_LITERAL(20, 257, 15),
+QT_MOC_LITERAL(21, 273, 10)
     },
     "MusicControl\0setIndexToUi\0\0setPlayingUi\0"
     "setPausedUi\0newRange\0newPosition\0"
     "updatePlayList\0playThatSong\0shuffleMode\0"
-    "playNextSong\0playPrevSong\0changeState\0"
-    "volumeSliderSlot\0setPosition\0position\0"
-    "stateHandler\0QMediaPlayer::MediaStatus\0"
-    "setSelectedSong\0repeatMode\0"
+    "songDidChanged\0QMediaContent\0playNextSong\0"
+    "playPrevSong\0changeState\0volumeSliderSlot\0"
+    "setPosition\0position\0stateHandler\0"
+    "QMediaPlayer::MediaStatus\0setSelectedSong\0"
+    "repeatMode\0"
 };
 #undef QT_MOC_LITERAL
 
@@ -66,7 +69,7 @@ static const uint qt_meta_data_MusicControl[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      16,   14, // methods
+      17,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -74,24 +77,25 @@ static const uint qt_meta_data_MusicControl[] = {
        5,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    2,   94,    2, 0x06,
-       3,    0,   99,    2, 0x06,
-       4,    0,  100,    2, 0x06,
-       5,    1,  101,    2, 0x06,
-       6,    1,  104,    2, 0x06,
+       1,    2,   99,    2, 0x06,
+       3,    0,  104,    2, 0x06,
+       4,    0,  105,    2, 0x06,
+       5,    1,  106,    2, 0x06,
+       6,    1,  109,    2, 0x06,
 
  // slots: name, argc, parameters, tag, flags
-       7,    0,  107,    2, 0x0a,
-       8,    2,  108,    2, 0x0a,
-       9,    1,  113,    2, 0x0a,
-      10,    0,  116,    2, 0x0a,
-      11,    0,  117,    2, 0x0a,
-      12,    0,  118,    2, 0x0a,
-      13,    1,  119,    2, 0x0a,
-      14,    1,  122,    2, 0x0a,
-      16,    1,  125,    2, 0x0a,
-      18,    2,  128,    2, 0x0a,
-      19,    1,  133,    2, 0x0a,
+       7,    0,  112,    2, 0x0a,
+       8,    2,  113,    2, 0x0a,
+       9,    1,  118,    2, 0x0a,
+      10,    1,  121,    2, 0x0a,
+      12,    0,  124,    2, 0x0a,
+      13,    0,  125,    2, 0x0a,
+      14,    0,  126,    2, 0x0a,
+      15,    1,  127,    2, 0x0a,
+      16,    1,  130,    2, 0x0a,
+      18,    1,  133,    2, 0x0a,
+      20,    2,  136,    2, 0x0a,
+      21,    1,  141,    2, 0x0a,
 
  // signals: parameters
     QMetaType::Void, QMetaType::Int, QMetaType::Int,    2,    2,
@@ -104,12 +108,13 @@ static const uint qt_meta_data_MusicControl[] = {
     QMetaType::Void,
     QMetaType::Void, QMetaType::Int, QMetaType::Int,    2,    2,
     QMetaType::Void, QMetaType::Bool,    2,
+    QMetaType::Void, 0x80000000 | 11,    2,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void, QMetaType::Int,    2,
-    QMetaType::Void, QMetaType::Int,   15,
-    QMetaType::Void, 0x80000000 | 17,    2,
+    QMetaType::Void, QMetaType::Int,   17,
+    QMetaType::Void, 0x80000000 | 19,    2,
     QMetaType::Void, QMetaType::Int, QMetaType::Int,    2,    2,
     QMetaType::Void, QMetaType::Bool,    2,
 
@@ -129,20 +134,28 @@ void MusicControl::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
         case 5: _t->updatePlayList(); break;
         case 6: _t->playThatSong((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
         case 7: _t->shuffleMode((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 8: _t->playNextSong(); break;
-        case 9: _t->playPrevSong(); break;
-        case 10: _t->changeState(); break;
-        case 11: _t->volumeSliderSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 12: _t->setPosition((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 13: _t->stateHandler((*reinterpret_cast< QMediaPlayer::MediaStatus(*)>(_a[1]))); break;
-        case 14: _t->setSelectedSong((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
-        case 15: _t->repeatMode((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 8: _t->songDidChanged((*reinterpret_cast< QMediaContent(*)>(_a[1]))); break;
+        case 9: _t->playNextSong(); break;
+        case 10: _t->playPrevSong(); break;
+        case 11: _t->changeState(); break;
+        case 12: _t->volumeSliderSlot((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 13: _t->setPosition((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 14: _t->stateHandler((*reinterpret_cast< QMediaPlayer::MediaStatus(*)>(_a[1]))); break;
+        case 15: _t->setSelectedSong((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        case 16: _t->repeatMode((*reinterpret_cast< bool(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
         switch (_id) {
         default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-        case 13:
+        case 8:
+            switch (*reinterpret_cast<int*>(_a[1])) {
+            default: *reinterpret_cast<int*>(_a[0]) = -1; break;
+            case 0:
+                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QMediaContent >(); break;
+            }
+            break;
+        case 14:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
@@ -211,13 +224,13 @@ int MusicControl::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 16)
+        if (_id < 17)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 16;
+        _id -= 17;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 16)
+        if (_id < 17)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 16;
+        _id -= 17;
     }
     return _id;
 }

@@ -33,3 +33,8 @@ quint16 SongProvider::songsCount()
 {
     return this->songs.count();
 }
+
+SongProvider::~SongProvider()
+{
+//    delete this->songs;
+}

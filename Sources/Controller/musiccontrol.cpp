@@ -1,5 +1,6 @@
 #include "musiccontrol.h"
 #include <QtMultimedia>
+#include "Sources/Prefix/application.h"
 #include "Sources/Model/songprovider.h"
 
 MusicControl::MusicControl(QObject *parent) : QObject(parent)
@@ -13,9 +14,12 @@ MusicControl::MusicControl(QObject *parent) : QObject(parent)
     previousIndex = 0;
     connect(player,SIGNAL(positionChanged(qint64)),this,SIGNAL(newPosition(qint64)));
     connect(player,SIGNAL(durationChanged(qint64)),this,SIGNAL(newRange(qint64)));
-    connect(player,SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)),
-            this,SLOT(stateHandler(QMediaPlayer::MediaStatus)));
+    connect(player,SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)),this,SLOT(stateHandler(QMediaPlayer::MediaStatus)));
+    connect(player,SIGNAL(currentMediaChanged(QMediaContent)),this,SLOT(songDidChanged(QMediaContent)));
     connect(SongProvider::sharedProvider(),SIGNAL(songListDidUpdated()),this,SLOT(updatePlayList()));
+    connect(qvkApp->hotkeyHandler,SIGNAL(didTapNextButton()),this,SLOT(playNextSong()));
+    connect(qvkApp->hotkeyHandler,SIGNAL(didTapPrevButton()),this,SLOT(playPrevSong()));
+    connect(qvkApp->hotkeyHandler,SIGNAL(didTapPlayPauseButton()),this,SLOT(changeState()));
 }
 
 void MusicControl::clearHistory()
@@ -28,42 +32,44 @@ void MusicControl::volumeSliderSlot(int value)
     player->setVolume(value);
 }
 
-
 void MusicControl::setPosition(int position)
 {
+    player->pause();
     player->setPosition(position);
+    player->play();
 }
 
 void MusicControl::stateHandler(QMediaPlayer::MediaStatus state)
 {
+    qDebug() << "New state of player " <<state;
     switch (state)
     {
     case QMediaPlayer::UnknownMediaStatus:
-        break;
     case QMediaPlayer::NoMedia:
-        break;
-    case QMediaPlayer::LoadingMedia:
-        //qDebug()<<"loading media";
-        break;
-    case QMediaPlayer::LoadedMedia:
-        // qDebug()<<"loaded media";
-        break;
-    case QMediaPlayer::StalledMedia:
-        //qDebug()<<"Stalled media";
-        break;
-    case QMediaPlayer::BufferingMedia:
-        //qDebug()<<"Buffering media";
-        break;
-    case QMediaPlayer::BufferedMedia:
-        //qDebug()<<"Buffered media";
-        break;
+    case QMediaPlayer::InvalidMedia:
     case QMediaPlayer::EndOfMedia:
         playNextSong();
         break;
-    case QMediaPlayer::InvalidMedia:
-        break;
-    default:
-        break;
+    default: break;
+    }
+}
+
+void MusicControl::songDidChanged(QMediaContent)
+{
+    if (playlist->currentIndex() >= 0 && playlist->currentIndex() < SongProvider::sharedProvider()->songsCount())
+    {
+        qDebug() << "Song did changed to index "<<playlist->currentIndex();
+        if (shufle)
+        {
+            playRandomSong();
+        }
+        else
+        {
+            previousIndex = currentIndex;
+            history.push(previousIndex);
+            currentIndex = playlist->currentIndex();
+        }
+        emit setIndexToUi(currentIndex,previousIndex);
     }
 }
 
@@ -93,11 +99,12 @@ void MusicControl::updatePlayList()
 
 void MusicControl::playThatSong(int songNumber, int)
 {
+    qDebug() << "Play song with id:" <<songNumber;
     //if(currentIndex != 0)
     previousIndex = currentIndex;
 
     //for reventing extra zero song in prev button
-    if (!(currentIndex == 0 && previousIndex == 0))
+    if (currentIndex != 0 || previousIndex != 0)
     {
         history.push(previousIndex);
     }
@@ -117,23 +124,10 @@ void MusicControl::shuffleMode(bool enable)
 
 void MusicControl::playNextSong()
 {
+    qDebug() << "Play next song";
     if (shufle)
     {
-        player->stop();
-        QTime time = QTime::currentTime();
-        qsrand((uint)time.msec());
-        previousIndex = playlist->currentIndex();
-        history.push(previousIndex);
-        if (!repeat)
-        {
-            currentIndex = qrand() % playlist->mediaCount();
-        }
-        else
-        {
-            currentIndex = playlist->currentIndex();
-        }
-        playlist->setCurrentIndex(currentIndex);
-        player->play();
+        playRandomSong();
     }
     else
     {
@@ -148,8 +142,28 @@ void MusicControl::playNextSong()
     emit setIndexToUi(currentIndex,previousIndex);
 }
 
+void MusicControl::playRandomSong()
+{
+    player->stop();
+    QTime time = QTime::currentTime();
+    qsrand((uint)time.msec());
+    previousIndex = currentIndex;
+    history.push(previousIndex);
+    if (!repeat)
+    {
+        currentIndex = qrand() % playlist->mediaCount();
+    }
+    else
+    {
+        currentIndex = playlist->currentIndex();
+    }
+    playlist->setCurrentIndex(currentIndex);
+    player->play();
+}
+
 void MusicControl::playPrevSong()
 {
+    qDebug() << "Play prev song";
     int localPreviousIndex;
     localPreviousIndex = playlist->currentIndex();
     if (!history.isEmpty())

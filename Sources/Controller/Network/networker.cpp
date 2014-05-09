@@ -59,16 +59,18 @@ void NetWorker::replyFinished(QNetworkReply *reply)
                     if (xml.name() == "artist")
                     {
                         song->artist = xml.readElementText();
+                        song->artist[0] = song->artist[0].toUpper();
                     }
 
                     else if (xml.name() == "title")
                     {
                         song->title = xml.readElementText();
+                        song->title[0] = song->title[0].toUpper();
                     }
 
                     else if (xml.name() == "duration")
                     {
-                        song->duration = xml.readElementText();
+                        song->duration = xml.readElementText().toUInt();
                     }
 
                     else if (xml.name() == "url")

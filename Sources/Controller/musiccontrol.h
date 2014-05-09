@@ -16,6 +16,7 @@ class MusicControl : public QObject
     int previousIndex;
     QStack<int> history;
     int selectedSong;
+    void playRandomSong();
 public:
     explicit MusicControl(QObject *parent = 0);
     void clearHistory();
@@ -29,6 +30,7 @@ public slots:
     void updatePlayList();
     void playThatSong(int,int);
     void shuffleMode(bool);
+    void songDidChanged(QMediaContent);
     void playNextSong();
     void playPrevSong();
     void changeState();
