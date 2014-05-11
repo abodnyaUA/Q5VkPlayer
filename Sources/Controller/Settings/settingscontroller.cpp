@@ -15,6 +15,7 @@ SettingsController::SettingsController()
     minToTray = settings->value("minToTrayOnClose",false).toBool();
     _useHotkeys = settings->value("useHotkeys",false).toBool();
     _useMediaHotkeys = settings->value("useMediaHotkeys",false).toBool();
+    shuffle = settings->value("shuffle").toBool();
     loadTrayIcon();
 }
 
@@ -111,5 +112,6 @@ void SettingsController::save()
     settings->setValue("useHotkeys",_useHotkeys);
     settings->setValue("useMediaHotkeys",_useMediaHotkeys);
     settings->setValue("minToTrayOnClose",minToTray);
+    settings->setValue("shuffle",shuffle);
     settings->sync();
 }

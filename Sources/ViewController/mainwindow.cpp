@@ -113,6 +113,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
 
     loadSettings();
 
+    if (qvkApp->settings->shuffle)
+    {
+        ui->shuffButton->toggle();
+    }
+
     this->installEventFilter(qvkApp->hotkeyHandler);
     ui->musicWidget->viewport()->installEventFilter(qvkApp->hotkeyHandler);
     ui->musicWidget->installEventFilter(qvkApp->hotkeyHandler);
