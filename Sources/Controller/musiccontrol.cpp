@@ -57,7 +57,7 @@ void MusicControl::stateHandler(QMediaPlayer::MediaStatus state)
 void MusicControl::songDidChanged(QMediaContent)
 {
 #ifdef Q_OS_OSX
-    if (playlist->currentIndex() >= 0 && playlist->currentIndex() < SongProvider::sharedProvider()->songsCount() && !qvkApp->settings->shuffle)
+    if (playlist->currentIndex() >= 0 && playlist->currentIndex() < SongProvider::sharedProvider()->songsCount())
     {
         qDebug() << "Song did changed to index "<<playlist->currentIndex();
         if (shufle)
@@ -122,7 +122,6 @@ void MusicControl::playThatSong(int songNumber, int)
 void MusicControl::shuffleMode(bool enable)
 {
     shufle = enable;
-    qvkApp->settings->shuffle = enable;
 }
 
 void MusicControl::playNextSong()

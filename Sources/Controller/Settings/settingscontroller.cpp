@@ -1,9 +1,10 @@
 #include "settingscontroller.h"
 #include "Sources/Controller/Network/networker.h"
 #include <stdlib.h>
-
-void loadTrayIcon();
-void linuxIconShow();
+#ifdef WIN32
+#include <windows.h>
+#include <qt_windows.h>
+#endif
 
 SettingsController::SettingsController()
 {
@@ -15,36 +16,9 @@ SettingsController::SettingsController()
     minToTray = settings->value("minToTrayOnClose",false).toBool();
     _useHotkeys = settings->value("useHotkeys",false).toBool();
     _useMediaHotkeys = settings->value("useMediaHotkeys",false).toBool();
-    shuffle = settings->value("shuffle").toBool();
-    loadTrayIcon();
+    //loadTrayIcon();
 }
 
-void loadTrayIcon()
-{
-#ifdef Q_OS_LINUX
-    desktop = getenv("XDG_CURRENT_DESKTOP");
-    isUnity = (desktop.toLower() == "unity");
-    qDebug()<<"CURRENT DESKTOP: " << desktop;
-    if (isUnity)
-    {
-        QtConcurrent::run(this, &linuxIconShow);
-    }
-    else
-    {
-        trayIcon->show();
-    }
-#endif
-#ifdef WIN32
-    trayIcon->show();
-#endif
-}
-
-#ifdef Q_OS_LINUX
-void linuxIconShow()
-{
-    system("python2 tray.py");
-}
-#endif
 
 void SettingsController::setUseHotkeys(bool value)
 {
@@ -71,27 +45,27 @@ bool SettingsController::useMediaHotkeys()
 void SettingsController::updateHotkeys()
 {
 #ifdef WIN32
-    UnregisterHotKey((HWND)winId(),66613);
-    UnregisterHotKey((HWND)winId(),66612);
-    UnregisterHotKey((HWND)winId(),66611);
+    UnregisterHotKey((HWND)QApplication::activeWindow()->winId(),66613);
+    UnregisterHotKey((HWND)QApplication::activeWindow()->winId(),66612);
+    UnregisterHotKey((HWND)QApplication::activeWindow()->winId(),66611);
 #endif
     if (useHotkeys())
     {
         if (useMediaHotkeys())
         {
 #ifdef WIN32
-            RegisterHotKey((HWND)winId(),66613, 0, VK_MEDIA_NEXT_TRACK);
-            RegisterHotKey((HWND)winId(),66612, 0, VK_MEDIA_PREV_TRACK);
-            RegisterHotKey((HWND)winId(),66611, 0, VK_MEDIA_PLAY_PAUSE);
+            RegisterHotKey((HWND)QApplication::activeWindow()->winId(),66613, 0, VK_MEDIA_NEXT_TRACK);
+            RegisterHotKey((HWND)QApplication::activeWindow()->winId(),66612, 0, VK_MEDIA_PREV_TRACK);
+            RegisterHotKey((HWND)QApplication::activeWindow()->winId(),66611, 0, VK_MEDIA_PLAY_PAUSE);
             qDebug()<<"Registered media hotkeys";
 #endif
         }
         else
         {
 #ifdef WIN32
-            RegisterHotKey((HWND)winId(),66613, MOD_CONTROL, VK_RIGHT);
-            RegisterHotKey((HWND)winId(),66612, MOD_CONTROL, VK_LEFT);
-            RegisterHotKey((HWND)winId(),66611, MOD_CONTROL, VK_DOWN);
+            RegisterHotKey((HWND)QApplication::activeWindow()->winId(),66613, MOD_CONTROL, VK_RIGHT);
+            RegisterHotKey((HWND)QApplication::activeWindow()->winId(),66612, MOD_CONTROL, VK_LEFT);
+            RegisterHotKey((HWND)QApplication::activeWindow()->winId(),66611, MOD_CONTROL, VK_DOWN);
             qDebug()<<"Registered desktop hotkeys";
 #endif
         }
@@ -112,6 +86,5 @@ void SettingsController::save()
     settings->setValue("useHotkeys",_useHotkeys);
     settings->setValue("useMediaHotkeys",_useMediaHotkeys);
     settings->setValue("minToTrayOnClose",minToTray);
-    settings->setValue("shuffle",shuffle);
     settings->sync();
 }

@@ -7,6 +7,7 @@
 #include "ThirdParty/QtSingleApplication/qtsingleapplication.h"
 
 
+
 #define qvkApp (static_cast<Application *>(QCoreApplication::instance()))
 
 class Application : public SharedTools::QtSingleApplication

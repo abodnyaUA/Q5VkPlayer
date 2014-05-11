@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QWidget>
 #include <QDebug>
+#include "Sources/Prefix/application.h"
 
 #ifdef WIN32
 #include <windows.h>
@@ -66,7 +67,7 @@ bool HotkeyHandler::nativeEvent(const QByteArray &eventType, void *message, long
     {
         emit didTapPrevButton();
     }
-    else if ((msg->wParam == 69 && useMediaHotkeys)|| msg->wParam == 66611)   //69 is wParam of media key play/pause
+    else if ((msg->wParam == 69 && qvkApp->settings->useMediaHotkeys())|| msg->wParam == 66611)   //69 is wParam of media key play/pause
     {
         emit didTapPlayPauseButton();
     }

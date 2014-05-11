@@ -60,6 +60,7 @@ private slots:
     void about();
     void trayHandler(QSystemTrayIcon::ActivationReason reason);
     void updateCellStateOfSong(Song *song);
+    void loadTrayIcon();
 #ifdef Q_OS_LINUX
     void linuxIconShow();
 #endif

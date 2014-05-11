@@ -17,7 +17,6 @@ public:
     bool useCache;
     bool minToTray;
     bool isUnity;
-    bool shuffle;
     QByteArray geometry;
     uint volume;
     QString token;

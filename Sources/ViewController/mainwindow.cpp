@@ -10,9 +10,6 @@
 #include <QSettings>
 #include <QSystemTrayIcon>
 #include <QtConcurrent/QtConcurrent>
-#ifdef Q_OS_OSX
-#include <QStyleFactory>
-#endif
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWindow)
 {
@@ -113,17 +110,42 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
 
     loadSettings();
 
-    if (qvkApp->settings->shuffle)
-    {
-        ui->shuffButton->toggle();
-    }
-
     this->installEventFilter(qvkApp->hotkeyHandler);
     ui->musicWidget->viewport()->installEventFilter(qvkApp->hotkeyHandler);
     ui->musicWidget->installEventFilter(qvkApp->hotkeyHandler);
+    loadTrayIcon();
+
 }
 
 #pragma mark - Settings
+
+void MainWindow::loadTrayIcon()
+{
+#ifdef Q_OS_LINUX
+    desktop = getenv("XDG_CURRENT_DESKTOP");
+    isUnity = (desktop.toLower() == "unity");
+    qDebug()<<"CURRENT DESKTOP: " << desktop;
+    if (isUnity)
+    {
+        QtConcurrent::run(this, &linuxIconShow);
+    }
+    else
+    {
+        trayIcon->show();
+    }
+#endif
+#ifdef WIN32
+    trayIcon->show();
+#endif
+}
+
+#ifdef Q_OS_LINUX
+void MainWindow::linuxIconShow()
+{
+    system("python2 tray.py");
+}
+#endif
+
 
 void MainWindow::loadSettings()
 {
